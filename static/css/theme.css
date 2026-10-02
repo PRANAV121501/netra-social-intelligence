@@ -1036,7 +1036,14 @@ body {
    RESPONSIVE LAYOUT SYSTEM (DESKTOP + TABLET + MOBILE)
    ========================================================================== */
 
-/* Large Tablets & Medium Laptops */
+/* Laptops & Standard Displays */
+@media (max-width: 1440px) {
+  .date-pill {
+    display: none;
+  }
+}
+
+/* Large Tablets & Compact Laptops */
 @media (max-width: 1200px) {
   .bottom-grid {
     grid-template-columns: repeat(2, 1fr);

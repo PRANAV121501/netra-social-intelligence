@@ -254,28 +254,56 @@ function renderDetailedTab(tabId, titleEl, bodyEl) {
         setTimeout(() => {
             const mapContainer = document.getElementById("india-leaflet-map");
             if (mapContainer && typeof L !== "undefined") {
-                const map = L.map("india-leaflet-map").setView([22.5937, 78.9629], 5);
-                L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-                    attribution: '&copy; CartoDB &copy; OpenStreetMap',
-                    maxZoom: 18
+                if (window._indiaMapInstance) {
+                    try { window._indiaMapInstance.remove(); } catch(e){}
+                    window._indiaMapInstance = null;
+                }
+
+                const map = L.map("india-leaflet-map", {
+                    center: [22.5937, 78.9629],
+                    zoom: 5,
+                    minZoom: 4,
+                    maxZoom: 12
+                });
+                window._indiaMapInstance = map;
+
+                // Esri World Dark Gray Canvas — zero API key required, no watermarks
+                L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+                    attribution: '&copy; Esri, DeLorme, NAVTEQ',
+                    maxZoom: 16
+                }).addTo(map);
+
+                // Esri Reference Labels Layer
+                L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+                    attribution: '',
+                    maxZoom: 16
                 }).addTo(map);
 
                 (PIPELINE_DATA.geo_intel || []).forEach(g => {
                     const color = g.threat_level === "CRITICAL" ? "#ef4444" : (g.threat_level === "HIGH" ? "#f59e0b" : "#10b981");
                     const circle = L.circleMarker([g.lat, g.lon], {
-                        radius: Math.max(8, Math.min(22, g.volume * 3)),
+                        radius: Math.max(9, Math.min(22, g.volume * 3)),
                         fillColor: color,
                         color: "#ffffff",
-                        weight: 1.5,
-                        opacity: 0.9,
-                        fillOpacity: 0.7
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
                     }).addTo(map);
 
                     circle.bindPopup(`
-                        <b style="color:#fff; font-size:13px;">${g.city}, ${g.state}</b><br>
-                        <span style="color:${color}; font-weight:700;">Threat Level: ${g.threat_level} (${g.threat_score}/100)</span><br>
-                        <span style="color:#94a3b8; font-size:11px;">Analyzed Posts: ${g.volume}</span><br>
-                        <span style="color:#38bdf8; font-size:11px;">Bot Activity: ${g.bot_activity_flag ? '⚠️ DETECTED' : 'Clean'}</span>
+                        <div style="font-family:Inter,sans-serif; padding:4px;">
+                            <b style="color:#fff; font-size:13px; letter-spacing:0.5px;">${g.city}, ${g.state}</b><br>
+                            <div style="margin:4px 0;">
+                                <span style="display:inline-block; font-size:10px; font-weight:700; padding:2px 7px; border-radius:3px; background:${color}; color:#fff;">
+                                    THREAT: ${g.threat_level} (${g.threat_score}/100)
+                                </span>
+                            </div>
+                            <div style="font-size:11px; color:#94a3b8;">Analyzed Posts: <b style="color:#fff;">${g.volume}</b></div>
+                            <div style="font-size:11px; color:#38bdf8;">Engagement: <b style="color:#fff;">${g.total_engagement.toLocaleString()}</b></div>
+                            <div style="font-size:11px; color:${g.bot_activity_flag ? '#f87171' : '#10b981'}; margin-top:2px;">
+                                Bot Telemetry: ${g.bot_activity_flag ? '⚠️ DETECTED' : '✓ Normal'}
+                            </div>
+                        </div>
                     `);
                 });
             }
