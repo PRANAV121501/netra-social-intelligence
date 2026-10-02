@@ -17,18 +17,19 @@ from datetime import datetime
 import sys
 from functools import wraps
 
-from engine.pipeline import IntelligencePipeline
+# Ensure project root is in sys.path for Vercel and PyInstaller
+base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+if base_dir not in sys.path:
+    sys.path.insert(0, base_dir)
 
-# Configure Flask root and assets for standalone PyInstaller EXE or standard Python
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    base_dir = sys._MEIPASS
-    app = Flask(__name__, template_folder=os.path.join(base_dir, "templates"), static_folder=os.path.join(base_dir, "static"))
-else:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    app = Flask(__name__)
-
+# Initialize Flask app at top level with explicit folders
+app = Flask(__name__, template_folder=os.path.join(base_dir, "templates"), static_folder=os.path.join(base_dir, "static"))
 app.secret_key = os.environ.get("NETRA_SECRET", "netra-sip-2026-auth-token")
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+# Expose WSGI targets for Vercel, Gunicorn, and AWS Lambda
+application = app
+handler = app
 
 @app.after_request
 def add_header(response):
@@ -37,7 +38,7 @@ def add_header(response):
     response.headers["Expires"] = "0"
     return response
 
-# Lazy-initialized globals (deferred to first request for Vercel compatibility)
+# Lazy-initialized globals (deferred to first request for Vercel serverless compatibility)
 pipeline = None
 INITIAL_POSTS = None
 CURRENT_PIPELINE_RESULTS = None
@@ -48,10 +49,25 @@ def _ensure_initialized():
     global pipeline, INITIAL_POSTS, CURRENT_PIPELINE_RESULTS
     if CURRENT_PIPELINE_RESULTS is not None:
         return
-    pipeline = IntelligencePipeline()
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        INITIAL_POSTS = json.load(f)
-    CURRENT_PIPELINE_RESULTS = pipeline.run(INITIAL_POSTS)
+    try:
+        from engine.pipeline import IntelligencePipeline
+        pipeline = IntelligencePipeline()
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                INITIAL_POSTS = json.load(f)
+        else:
+            INITIAL_POSTS = []
+        CURRENT_PIPELINE_RESULTS = pipeline.run(INITIAL_POSTS)
+    except Exception as e:
+        print(f"[NETRA CRITICAL] Pipeline initialization error: {e}", flush=True)
+        CURRENT_PIPELINE_RESULTS = {
+            "summary_kpis": {"total_posts": 0},
+            "posts": [],
+            "trends": [],
+            "narratives": [],
+            "alerts": []
+        }
+
 
 # Analyst / Intelligence Officer Profiles
 PROFILES = {

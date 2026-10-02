@@ -1244,3 +1244,14 @@ body {
   }
 }
 
+/* Tactical Dark Military HUD Style for OpenStreetMap */
+#india-leaflet-map {
+  background: #060b18 !important;
+}
+#india-leaflet-map .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(2.2) hue-rotate(200deg) saturate(0.4) brightness(0.7) !important;
+}
+#india-leaflet-map .leaflet-container {
+  background: #060b18 !important;
+}
+
