@@ -1,0 +1,7 @@
+Flask
+networkx
+pandas
+numpy
+spacy
+gunicorn
+pywebview

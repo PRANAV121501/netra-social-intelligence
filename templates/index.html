@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NETRA — Social Intelligence Platform (SIH26152)</title>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Vis.js for Network Graph Analytics -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+  <!-- NETRA Dashboard Theme -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+
+  <!-- ===================== TOP NAVIGATION HEADER ===================== -->
+  <header class="netra-header">
+    <div class="header-brand">
+      <img src="{{ url_for('static', filename='img/netra_logo.png') }}" alt="NETRA Logo" class="brand-logo-img">
+      <div class="brand-text">NETRA</div>
+      <div class="brand-subtitle">Social Intelligence Platform</div>
+      <div class="sih-badge">SIH26152</div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="header-search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="global-search-input" type="text" class="search-input" placeholder="Search for a topic, user, hashtag, or ask a question...">
+      <span class="search-shortcut">Ctrl K</span>
+    </div>
+
+    <!-- Actions & Controls -->
+    <div class="header-actions">
+      <div class="date-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Sep 20, 2026 - Sep 27, 2026</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+
+      <div id="btn-live-toggle" class="live-pill" title="Click to trigger simulated real-time data ingestion">
+        <span class="live-dot"></span>
+        <span>Live Data (Simulated)</span>
+      </div>
+
+      <button class="icon-button" title="Alert Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span class="notification-badge">3</span>
+      </button>
+
+      <div class="user-avatar-circle" title="Logged in as Analyst (P. Sharma)">P</div>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN LAYOUT ===================== -->
+  <div class="layout-container">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="netra-sidebar">
+      <div class="sidebar-nav-list">
+        <div class="nav-link active" data-tab="tab-dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Dashboard
+        </div>
+
+        <div class="nav-link" data-tab="tab-narratives">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Narrative Analysis
+        </div>
+
+        <div class="nav-link" data-tab="tab-trends">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          Trending Topics
+        </div>
+
+        <div class="nav-link" data-tab="tab-communities">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Communities
+        </div>
+
+        <div class="nav-link" data-tab="tab-influencers">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Influencers
+        </div>
+
+        <div class="nav-link" data-tab="tab-graph-explorer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          Network Explorer
+        </div>
+
+        <div class="nav-link" data-tab="tab-alerts">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Alerts
+          <span class="nav-link-badge">3</span>
+        </div>
+
+        <div class="nav-link" data-tab="tab-predictive">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Predictive Insights
+        </div>
+
+        <div class="nav-link" data-tab="tab-reports">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Reports
+        </div>
+      </div>
+
+      <!-- Data Sources Counter -->
+      <div class="sidebar-sources-box">
+        <div class="sources-title">Data Sources (Local)</div>
+        <div class="source-item"><span>𝕏 X (Twitter)</span> <b>45K posts</b></div>
+        <div class="source-item"><span>✈ Telegram</span> <b>28K posts</b></div>
+        <div class="source-item"><span>📷 Instagram</span> <b>32K posts</b></div>
+        <div class="source-item"><span>f Facebook</span> <b>26K posts</b></div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="netra-content">
+
+      <!-- ===================== VIEW 1: MAIN DASHBOARD ===================== -->
+      <div id="view-dashboard" class="dashboard-active-view">
+
+        <!-- ROW 1: 4 TOP KPI CARDS -->
+        <section class="kpi-row">
+          <!-- KPI 1 -->
+          <div class="kpi-stat-card">
+            <div class="kpi-left-group">
+              <div class="kpi-icon-circle blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </div>
+              <div>
+                <div class="kpi-title">Total Posts Analysed</div>
+                <div class="kpi-big-number">
+                  <span id="stat-posts">1,31,245</span>
+                  <span class="delta-badge up">↑ 12.4%</span>
+                </div>
+              </div>
+            </div>
+            <!-- Blue Sparkline -->
+            <svg class="kpi-sparkline-svg" viewBox="0 0 100 35">
+              <path d="M0,28 Q15,30 30,22 T60,18 T85,8 T100,5" fill="none" stroke="#38bdf8" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="kpi-stat-card">
+            <div class="kpi-left-group">
+              <div class="kpi-icon-circle purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div>
+                <div class="kpi-title">Active Communities</div>
+                <div class="kpi-big-number">
+                  <span id="stat-comm">312</span>
+                  <span class="delta-badge up">↑ 6.1%</span>
+                </div>
+              </div>
+            </div>
+            <!-- Purple Sparkline -->
+            <svg class="kpi-sparkline-svg" viewBox="0 0 100 35">
+              <path d="M0,26 Q20,29 40,24 T70,14 T90,18 T100,10" fill="none" stroke="#a855f7" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="kpi-stat-card">
+            <div class="kpi-left-group">
+              <div class="kpi-icon-circle red">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <div>
+                <div class="kpi-title">Risk Alerts</div>
+                <div class="kpi-big-number">
+                  <span id="stat-alerts">8</span>
+                  <span class="delta-badge down" style="color:#ef4444;">↑ 3</span>
+                </div>
+              </div>
+            </div>
+            <!-- Red Sparkline -->
+            <svg class="kpi-sparkline-svg" viewBox="0 0 100 35">
+              <path d="M0,25 Q25,28 45,22 T75,26 T90,14 T100,6" fill="none" stroke="#ef4444" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <!-- KPI 4 -->
+          <div class="kpi-stat-card">
+            <div class="kpi-left-group">
+              <div class="kpi-icon-circle green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              </div>
+              <div>
+                <div class="kpi-title">Emerging Narratives</div>
+                <div class="kpi-big-number">
+                  <span id="stat-narratives">12</span>
+                  <span class="delta-badge up">↑ 4</span>
+                </div>
+              </div>
+            </div>
+            <!-- Green Sparkline -->
+            <svg class="kpi-sparkline-svg" viewBox="0 0 100 35">
+              <path d="M0,28 Q20,30 40,24 T70,18 T90,10 T100,4" fill="none" stroke="#10b981" stroke-width="2.5" />
+            </svg>
+          </div>
+        </section>
+
+        <!-- ROW 2: GRAPH (LEFT) & NARRATIVES + SENTIMENT (RIGHT) -->
+        <section class="middle-grid">
+          
+          <!-- LEFT: SOCIAL CONVERSATION NETWORK -->
+          <div class="card-panel">
+            <div class="panel-header-row">
+              <div>
+                <div class="panel-heading">Social Conversation Network</div>
+                <div class="panel-subheading">Visualizing relationships between users, topics, communities and organizations</div>
+              </div>
+              <div class="pill-controls">
+                <button class="control-btn">All Platforms <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <button id="btn-toggle-cooccur" class="control-btn active">Co-occurrence</button>
+                <button id="btn-toggle-comm" class="control-btn">Community</button>
+                <button id="btn-graph-fullscreen" class="tool-square-btn" style="width:26px; height:26px;" title="Focus / Fit View">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Graph Canvas -->
+            <div class="network-graph-frame">
+              <div id="main-network-graph" class="graph-canvas-inner"></div>
+
+              <!-- Tool square buttons on left -->
+              <div class="graph-overlay-tools">
+                <div class="tool-square-btn" id="graph-tool-zoom-in" title="Zoom In">+</div>
+                <div class="tool-square-btn" id="graph-tool-zoom-out" title="Zoom Out">-</div>
+                <div class="tool-square-btn" id="graph-tool-fit" title="Reset View">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                </div>
+                <div class="tool-square-btn" id="graph-tool-layers" title="Toggle Filters">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+              </div>
+
+              <!-- Legend Overlay on Right -->
+              <div class="graph-overlay-legend">
+                <div class="legend-row"><span class="legend-dot" style="background:#38bdf8;"></span> Users</div>
+                <div class="legend-row"><span class="legend-dot" style="background:#ef4444;"></span> Topics</div>
+                <div class="legend-row"><span class="legend-dot" style="background:#10b981;"></span> Communities</div>
+                <div class="legend-row"><span class="legend-dot" style="background:#facc15;"></span> Organizations</div>
+                <div class="legend-row"><span class="legend-dot" style="background:#c084fc;"></span> Hashtags</div>
+                <div class="legend-row"><span class="legend-dot" style="background:#fb923c;"></span> Locations</div>
+              </div>
+
+              <!-- Minimap Box on bottom-right -->
+              <div class="graph-minimap-box" title="Global Graph Mini-Radar">
+                <svg width="60" height="48" viewBox="0 0 60 48">
+                  <circle cx="30" cy="24" r="3" fill="#38bdf8" />
+                  <circle cx="42" cy="14" r="2.5" fill="#ef4444" />
+                  <circle cx="18" cy="18" r="2.5" fill="#10b981" />
+                  <circle cx="20" cy="34" r="2.5" fill="#c084fc" />
+                  <circle cx="44" cy="30" r="2.5" fill="#facc15" />
+                  <line x1="30" y1="24" x2="42" y2="14" stroke="rgba(255,255,255,0.15)" />
+                  <line x1="30" y1="24" x2="18" y2="18" stroke="rgba(255,255,255,0.15)" />
+                  <line x1="30" y1="24" x2="20" y2="34" stroke="rgba(255,255,255,0.15)" />
+                  <line x1="30" y1="24" x2="44" y2="30" stroke="rgba(255,255,255,0.15)" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: TRENDING NARRATIVES & SENTIMENT OVERVIEW -->
+          <div class="right-stack">
+            
+            <!-- CARD: TRENDING NARRATIVES -->
+            <div class="card-panel" style="padding:14px 16px;">
+              <div class="panel-header-row" style="margin-bottom:8px;">
+                <div class="panel-heading">Trending Narratives</div>
+                <a class="link-view-all" onclick="switchTab('tab-narratives')">View All</a>
+              </div>
+
+              <!-- Item 1: IndiaAI -->
+              <div class="narrative-item">
+                <div class="narrative-num-badge" style="background:#0284c7;">1</div>
+                <div class="narrative-info">
+                  <div class="narrative-headline">
+                    <span>IndiaAI</span>
+                    <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">12.4K posts</span>
+                    <span class="delta-badge up" style="font-size:10.5px;">↑ 170%</span>
+                  </div>
+                  <div class="narrative-subtext">Discussions around India's AI strategy and investments</div>
+                </div>
+                <svg class="sparkline-small" viewBox="0 0 60 20">
+                  <path d="M0,16 Q15,18 30,12 T50,6 T60,2" fill="none" stroke="#38bdf8" stroke-width="2" />
+                </svg>
+              </div>
+
+              <!-- Item 2: CyberSecurity -->
+              <div class="narrative-item">
+                <div class="narrative-num-badge" style="background:#8b5cf6;">2</div>
+                <div class="narrative-info">
+                  <div class="narrative-headline">
+                    <span>CyberSecurity</span>
+                    <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">9.8K posts</span>
+                    <span class="delta-badge up" style="font-size:10.5px;">↑ 142%</span>
+                  </div>
+                  <div class="narrative-subtext">Rising concerns about data breaches and cyber threats</div>
+                </div>
+                <svg class="sparkline-small" viewBox="0 0 60 20">
+                  <path d="M0,17 Q15,19 30,14 T45,8 T60,3" fill="none" stroke="#a855f7" stroke-width="2" />
+                </svg>
+              </div>
+
+              <!-- Item 3: StockRally -->
+              <div class="narrative-item">
+                <div class="narrative-num-badge" style="background:#ef4444;">3</div>
+                <div class="narrative-info">
+                  <div class="narrative-headline">
+                    <span>StockRally</span>
+                    <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">7.6K posts</span>
+                    <span class="delta-badge up" style="font-size:10.5px;">↑ 96%</span>
+                  </div>
+                  <div class="narrative-subtext">Indian stock market showing strong bullish sentiment</div>
+                </div>
+                <svg class="sparkline-small" viewBox="0 0 60 20">
+                  <path d="M0,16 Q20,18 35,13 T50,9 T60,4" fill="none" stroke="#ef4444" stroke-width="2" />
+                </svg>
+              </div>
+
+              <!-- Item 4: NationalSecurity -->
+              <div class="narrative-item">
+                <div class="narrative-num-badge" style="background:#3b82f6;">4</div>
+                <div class="narrative-info">
+                  <div class="narrative-headline">
+                    <span>NationalSecurity</span>
+                    <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">6.2K posts</span>
+                    <span class="delta-badge up" style="font-size:10.5px;">↑ 84%</span>
+                  </div>
+                  <div class="narrative-subtext">Discussions on defense, border security and geopolitics</div>
+                </div>
+                <svg class="sparkline-small" viewBox="0 0 60 20">
+                  <path d="M0,18 Q15,19 35,14 T50,8 T60,5" fill="none" stroke="#3b82f6" stroke-width="2" />
+                </svg>
+              </div>
+
+              <!-- Item 5: ClimateAction -->
+              <div class="narrative-item">
+                <div class="narrative-num-badge" style="background:#06b6d4;">5</div>
+                <div class="narrative-info">
+                  <div class="narrative-headline">
+                    <span>ClimateAction</span>
+                    <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">5.9K posts</span>
+                    <span class="delta-badge up" style="font-size:10.5px;">↑ 72%</span>
+                  </div>
+                  <div class="narrative-subtext">Conversations about climate change and sustainability</div>
+                </div>
+                <svg class="sparkline-small" viewBox="0 0 60 20">
+                  <path d="M0,18 Q20,19 38,15 T52,9 T60,6" fill="none" stroke="#f59e0b" stroke-width="2" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- CARD: SENTIMENT OVERVIEW -->
+            <div class="card-panel" style="padding:14px 16px;">
+              <div class="panel-header-row" style="margin-bottom:8px;">
+                <div class="panel-heading">Sentiment Overview</div>
+                <div class="control-btn" style="padding:2px 8px; font-size:10.5px;">Last 7 days ▾</div>
+              </div>
+
+              <div class="sentiment-overview-grid">
+                <!-- Donut Chart -->
+                <div class="donut-chart-wrapper">
+                  <svg width="85" height="85" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="38" stroke="#334155" stroke-width="12" fill="none" />
+                    <!-- Green: 24% = 57.3 -->
+                    <circle cx="50" cy="50" r="38" stroke="#10b981" stroke-width="12" fill="none"
+                            stroke-dasharray="57.3 238.7" stroke-dashoffset="0" />
+                    <!-- Neutral: 56% = 133.7 -->
+                    <circle cx="50" cy="50" r="38" stroke="#64748b" stroke-width="12" fill="none"
+                            stroke-dasharray="133.7 238.7" stroke-dashoffset="-57.3" />
+                    <!-- Red: 20% = 47.7 -->
+                    <circle cx="50" cy="50" r="38" stroke="#ef4444" stroke-width="12" fill="none"
+                            stroke-dasharray="47.7 238.7" stroke-dashoffset="-191" />
+                  </svg>
+                  <div class="donut-center-label">
+                    <b>1,31,245</b>
+                    <span>Posts</span>
+                  </div>
+                </div>
+
+                <!-- Legend Breakdown -->
+                <div class="sentiment-legend-column">
+                  <div class="sent-legend-item">
+                    <span style="display:flex; align-items:center; gap:4px; color:#cbd5e1;">
+                      <span class="legend-dot" style="background:#10b981;"></span> Positive
+                    </span>
+                    <span style="font-weight:700; color:#fff;">24%</span>
+                    <span class="delta-badge up" style="font-size:9.5px;">↑ 6%</span>
+                  </div>
+                  <div class="sent-legend-item">
+                    <span style="display:flex; align-items:center; gap:4px; color:#cbd5e1;">
+                      <span class="legend-dot" style="background:#64748b;"></span> Neutral
+                    </span>
+                    <span style="font-weight:700; color:#fff;">56%</span>
+                    <span class="delta-badge down" style="font-size:9.5px;">↓ 2%</span>
+                  </div>
+                  <div class="sent-legend-item">
+                    <span style="display:flex; align-items:center; gap:4px; color:#cbd5e1;">
+                      <span class="legend-dot" style="background:#ef4444;"></span> Negative
+                    </span>
+                    <span style="font-weight:700; color:#fff;">20%</span>
+                    <span class="delta-badge up" style="font-size:9.5px; color:#ef4444;">↑ 4%</span>
+                  </div>
+                </div>
+
+                <!-- Sentiment Trend Mini Timeline Chart -->
+                <div class="trend-mini-chart">
+                  <div class="trend-chart-header">Sentiment Trend</div>
+                  <svg width="100%" height="52" viewBox="0 0 160 52" style="overflow:visible;">
+                    <!-- Grid horizontal lines -->
+                    <line x1="0" y1="10" x2="160" y2="10" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2 2" />
+                    <line x1="0" y1="26" x2="160" y2="26" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2 2" />
+                    <line x1="0" y1="42" x2="160" y2="42" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2 2" />
+
+                    <!-- Line 1: Green (Positive) -->
+                    <path d="M5,38 L25,36 L45,39 L65,34 L85,30 L105,32 L125,28 L145,24" fill="none" stroke="#10b981" stroke-width="1.8" />
+                    <circle cx="145" cy="24" r="2.5" fill="#10b981" />
+
+                    <!-- Line 2: Gray (Neutral) -->
+                    <path d="M5,18 L25,19 L45,17 L65,16 L85,18 L105,17 L125,18 L145,19" fill="none" stroke="#64748b" stroke-width="1.8" />
+                    <circle cx="145" cy="19" r="2.5" fill="#64748b" />
+
+                    <!-- Line 3: Red (Negative) -->
+                    <path d="M5,46 L25,44 L45,45 L65,47 L85,42 L105,43 L125,41 L145,40" fill="none" stroke="#ef4444" stroke-width="1.8" />
+                    <circle cx="145" cy="40" r="2.5" fill="#ef4444" />
+                  </svg>
+                  <div style="display:flex; justify-content:space-between; font-size:8px; color:var(--text-muted); margin-top:2px;">
+                    <span>20 Sep</span><span>22 Sep</span><span>24 Sep</span><span>27 Sep</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ROW 3: BOTTOM 4 CARDS -->
+        <section class="bottom-grid">
+          
+          <!-- CARD 1: RECENT POSTS -->
+          <div class="card-panel">
+            <div class="panel-header-row" style="margin-bottom:6px;">
+              <div class="panel-heading">Recent Posts</div>
+              <a class="link-view-all">View All</a>
+            </div>
+
+            <!-- Platform Filter Tabs -->
+            <div class="platform-filter-tabs">
+              <span class="platform-tab-chip active">All</span>
+              <span class="platform-tab-chip">𝕏 [Twitter]</span>
+              <span class="platform-tab-chip">✈ Telegram</span>
+              <span class="platform-tab-chip">📷 Instagram</span>
+              <span class="platform-tab-chip">f Facebook</span>
+            </div>
+
+            <!-- Post 1 -->
+            <div class="recent-post-card">
+              <div class="post-avatar-img">TI</div>
+              <div class="post-body">
+                <div class="post-author-line">
+                  <span>TechInsights</span>
+                  <span class="post-handle-span">@techinsights · 2h ago</span>
+                </div>
+                <div class="post-text">
+                  India's AI ecosystem is growing rapidly. Excited to see new initiatives from the government. <span style="color:#38bdf8;">#IndiaAI #DigitalIndia</span>
+                </div>
+                <div class="post-metrics-row">
+                  <span>💬 124</span>
+                  <span>🔄 532</span>
+                  <span>❤️ 1.2K</span>
+                </div>
+              </div>
+              <div class="post-media-thumb">AI FOR A BIGGER INDIA</div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="recent-post-card" style="border-bottom:none;">
+              <div class="post-avatar-img" style="background:#3b1e2b; color:#f87171;">CW</div>
+              <div class="post-body">
+                <div class="post-author-line">
+                  <span>CyberWatch</span>
+                  <span class="post-handle-span">@cyberwatch · 3h ago</span>
+                </div>
+                <div class="post-text">
+                  Critical vulnerability patched in major systems. Organizations should update immediately. <span style="color:#38bdf8;">#CyberSecurity #Infosec</span>
+                </div>
+                <div class="post-metrics-row">
+                  <span>💬 45</span>
+                  <span>🔄 218</span>
+                  <span>❤️ 640</span>
+                </div>
+              </div>
+              <div class="post-media-thumb" style="background:linear-gradient(135deg, #1e1b4b, #831843); color:#fbcfe8;">
+                CYBER THREAT PATCH
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: KEY COMMUNITIES -->
+          <div class="card-panel">
+            <div class="panel-header-row" style="margin-bottom:6px;">
+              <div class="panel-heading">Key Communities</div>
+              <a class="link-view-all" onclick="switchTab('tab-communities')">View All</a>
+            </div>
+            <div style="display:flex; justify-content:flex-end; font-size:10px; color:var(--text-muted); margin-bottom:4px;">
+              Sentiment
+            </div>
+
+            <!-- Comm 1 -->
+            <div class="community-row">
+              <div class="comm-left">
+                <div class="comm-icon-bullet" style="background:rgba(16,185,129,0.2); color:#10b981;">💻</div>
+                <div>
+                  <div class="comm-name-title">Tech Enthusiasts</div>
+                  <div class="comm-member-count">12.4K members</div>
+                </div>
+              </div>
+              <div class="comm-progress-group">
+                <div class="comm-bar-outer"><div class="comm-bar-inner" style="width:72%;"></div></div>
+                <span style="font-size:10px; color:#10b981; font-weight:600;">72%</span>
+              </div>
+            </div>
+
+            <!-- Comm 2 -->
+            <div class="community-row">
+              <div class="comm-left">
+                <div class="comm-icon-bullet" style="background:rgba(245,158,11,0.2); color:#f59e0b;">🛡️</div>
+                <div>
+                  <div class="comm-name-title">Cybersecurity Experts</div>
+                  <div class="comm-member-count">8.7K members</div>
+                </div>
+              </div>
+              <div class="comm-progress-group">
+                <div class="comm-bar-outer"><div class="comm-bar-inner" style="width:64%;"></div></div>
+                <span style="font-size:10px; color:#10b981; font-weight:600;">64%</span>
+              </div>
+            </div>
+
+            <!-- Comm 3 -->
+            <div class="community-row">
+              <div class="comm-left">
+                <div class="comm-icon-bullet" style="background:rgba(239,68,68,0.2); color:#ef4444;">📈</div>
+                <div>
+                  <div class="comm-name-title">Finance & Markets</div>
+                  <div class="comm-member-count">7.1K members</div>
+                </div>
+              </div>
+              <div class="comm-progress-group">
+                <div class="comm-bar-outer"><div class="comm-bar-inner" style="width:58%;"></div></div>
+                <span style="font-size:10px; color:#10b981; font-weight:600;">58%</span>
+              </div>
+            </div>
+
+            <!-- Comm 4 -->
+            <div class="community-row">
+              <div class="comm-left">
+                <div class="comm-icon-bullet" style="background:rgba(249,115,22,0.2); color:#f97316;">🏛️</div>
+                <div>
+                  <div class="comm-name-title">Policy & Governance</div>
+                  <div class="comm-member-count">6.3K members</div>
+                </div>
+              </div>
+              <div class="comm-progress-group">
+                <div class="comm-bar-outer"><div class="comm-bar-inner" style="width:51%;"></div></div>
+                <span style="font-size:10px; color:#10b981; font-weight:600;">51%</span>
+              </div>
+            </div>
+
+            <!-- Comm 5 -->
+            <div class="community-row" style="border-bottom:none;">
+              <div class="comm-left">
+                <div class="comm-icon-bullet" style="background:rgba(6,182,212,0.2); color:#06b6d4;">🌱</div>
+                <div>
+                  <div class="comm-name-title">Environmental Action</div>
+                  <div class="comm-member-count">4.9K members</div>
+                </div>
+              </div>
+              <div class="comm-progress-group">
+                <div class="comm-bar-outer"><div class="comm-bar-inner" style="width:49%;"></div></div>
+                <span style="font-size:10px; color:#10b981; font-weight:600;">49%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3: RISK & ALERTS -->
+          <div class="card-panel">
+            <div class="panel-header-row" style="margin-bottom:6px;">
+              <div class="panel-heading">Risk & Alerts</div>
+              <a class="link-view-all" onclick="switchTab('tab-alerts')">View All</a>
+            </div>
+
+            <!-- Alert 1 -->
+            <div class="alert-row">
+              <span class="alert-tag-pill critical">Critical</span>
+              <div>
+                <div class="alert-title-text">
+                  Coordinated campaign detected <span class="alert-time-span">2h ago</span>
+                </div>
+                <div class="alert-detail-text">42 accounts · Similar content pattern</div>
+              </div>
+            </div>
+
+            <!-- Alert 2 -->
+            <div class="alert-row">
+              <span class="alert-tag-pill medium">Medium</span>
+              <div>
+                <div class="alert-title-text">
+                  Potential bot network <span class="alert-time-span">5h ago</span>
+                </div>
+                <div class="alert-detail-text">128 suspicious accounts identified</div>
+              </div>
+            </div>
+
+            <!-- Alert 3 -->
+            <div class="alert-row">
+              <span class="alert-tag-pill medium">Medium</span>
+              <div>
+                <div class="alert-title-text">
+                  Sudden spike in #IndiaAI <span class="alert-time-span">7h ago</span>
+                </div>
+                <div class="alert-detail-text">+350% increase in 2 hours</div>
+              </div>
+            </div>
+
+            <!-- Alert 4 -->
+            <div class="alert-row" style="border-bottom:none;">
+              <span class="alert-tag-pill low">Low</span>
+              <div>
+                <div class="alert-title-text">
+                  Misinformation pattern detected <span class="alert-time-span">9h ago</span>
+                </div>
+                <div class="alert-detail-text">Related to policy announcement</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 4: AI ASSISTANT (BETA) -->
+          <div class="card-panel ai-assistant-card">
+            <div>
+              <div class="panel-header-row" style="margin-bottom:4px;">
+                <div class="panel-heading" style="display:flex; align-items:center; gap:6px;">
+                  <span>AI Assistant</span>
+                  <span style="font-size:9.5px; background:rgba(16,185,129,0.15); color:#10b981; padding:1px 5px; border-radius:3px; font-weight:600;">Beta</span>
+                </div>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+              </div>
+              <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">
+                Ask questions about the data...
+              </div>
+
+              <!-- Quick query chips -->
+              <div class="ai-chip-suggestions">
+                <div class="ai-prompt-chip" onclick="askAI('Top influencers discussing IndiaAI')">Top influencers discussing IndiaAI</div>
+                <div class="ai-prompt-chip" onclick="askAI('Show communities for cybersecurity')">Show communities for cybersecurity</div>
+                <div class="ai-prompt-chip" onclick="askAI('Why is #StockRally trending?')">Why is #StockRally trending?</div>
+                <div class="ai-prompt-chip" onclick="askAI('Detect coordinated activity')">Detect coordinated activity</div>
+              </div>
+            </div>
+
+            <!-- Mini Input Bar -->
+            <div class="ai-input-wrapper">
+              <input id="ai-quick-input" type="text" class="ai-mini-input" placeholder="Type your question...">
+              <button id="ai-quick-send-btn" class="ai-send-btn" title="Send question">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- ===================== VIEW 2: FULL TAB VIEWS ===================== -->
+      <div id="view-tab-content" class="full-tab-view">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h2 id="tab-view-title" style="font-size:18px; font-weight:700; color:#fff;">Narrative Analysis</h2>
+          <button class="control-btn active" onclick="switchTab('tab-dashboard')">← Back to Dashboard</button>
+        </div>
+        <div id="tab-view-body"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- AI Modal / Full Briefing Drawer -->
+  <div id="ai-briefing-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; width:90%; max-width:650px; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:10px;">
+        <b style="color:#38bdf8; font-family:var(--font-mono); font-size:12px;">[NETRA AI ASSISTANT TACTICAL BRIEFING]</b>
+        <button onclick="document.getElementById('ai-briefing-modal').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
+      </div>
+      <div id="ai-modal-response-body" style="font-size:13px; line-height:1.5; color:#f1f5f9; max-height:65vh; overflow-y:auto;">
+        Computing response...
+      </div>
+    </div>
+  </div>
+
+  <!-- Application JS Controller -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

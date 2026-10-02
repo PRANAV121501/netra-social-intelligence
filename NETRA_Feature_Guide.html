@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NETRA — Social Intelligence Platform | Feature Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #050c1a;
+      --navy2:   #0b1628;
+      --navy3:   #101e35;
+      --blue:    #1a8cff;
+      --cyan:    #00d4ff;
+      --green:   #00ff88;
+      --purple:  #8b5cf6;
+      --red:     #ff4757;
+      --orange:  #ff6b35;
+      --yellow:  #ffd600;
+      --text:    #e2e8f0;
+      --muted:   #7a8aa0;
+      --border:  rgba(255,255,255,0.08);
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+
+    /* ── COVER PAGE ─────────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #050c1a 0%, #0a1628 40%, #060e20 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      padding: 60px 40px;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,140,255,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cover-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(26,140,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,140,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .cover-badge {
+      background: rgba(26,140,255,0.15);
+      border: 1px solid rgba(26,140,255,0.4);
+      color: var(--cyan);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .cover-logo-wrap {
+      position: relative;
+      width: 120px; height: 120px;
+      margin-bottom: 32px;
+    }
+
+    .cover-logo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 30px rgba(26,140,255,0.6));
+    }
+
+    .cover-logo-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(26,140,255,0.3);
+      animation: none;
+    }
+
+    .cover-title {
+      font-size: 5rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 0%, #a0c4ff 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .cover-subtitle {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .cover-subtitle span {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .cover-divider {
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blue), var(--cyan), transparent);
+      margin: 0 auto 48px;
+    }
+
+    .cover-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .cover-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+
+    .cover-meta {
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      gap: 40px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+
+    .cover-meta span { color: var(--text); font-weight: 600; }
+
+    /* ── CONTENT PAGES ──────────────────────────────────── */
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 50px;
+    }
+
+    /* Section header */
+    .section {
+      margin-bottom: 56px;
+      page-break-inside: avoid;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: 0.02em;
+    }
+
+    .section-intro {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    /* Big intro box */
+    .intro-box {
+      background: linear-gradient(135deg, rgba(26,140,255,0.1), rgba(0,212,255,0.05));
+      border: 1px solid rgba(26,140,255,0.25);
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+    }
+
+    .intro-box p {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.85;
+    }
+
+    .intro-box strong { color: var(--cyan); }
+
+    /* Pipeline stages */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 16px;
+      align-items: start;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+
+    .stage:nth-child(1)::before  { background: var(--blue); }
+    .stage:nth-child(2)::before  { background: var(--purple); }
+    .stage:nth-child(3)::before  { background: var(--cyan); }
+    .stage:nth-child(4)::before  { background: var(--green); }
+    .stage:nth-child(5)::before  { background: var(--orange); }
+    .stage:nth-child(6)::before  { background: var(--yellow); }
+    .stage:nth-child(7)::before  { background: var(--red); }
+    .stage:nth-child(8)::before  { background: #00d4ff; }
+    .stage:nth-child(9)::before  { background: #ff4757; }
+    .stage:nth-child(10)::before { background: #8b5cf6; }
+
+    .stage-num {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(26,140,255,0.12);
+      border: 1px solid rgba(26,140,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stage-body {}
+
+    .stage-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .stage-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .card.blue::before   { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+    .card.green::before  { background: linear-gradient(90deg, var(--green), #00bfff); }
+    .card.purple::before { background: linear-gradient(90deg, var(--purple), #e879f9); }
+    .card.orange::before { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+    .card.red::before    { background: linear-gradient(90deg, var(--red), var(--orange)); }
+    .card.cyan::before   { background: linear-gradient(90deg, var(--cyan), #1a8cff); }
+
+    .card-icon {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .card-body {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* Nav table */
+    .nav-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .nav-table th {
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    .nav-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .nav-table td:first-child {
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .nav-table td:last-child {
+      color: var(--muted);
+    }
+
+    .tab-icon {
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .kpi {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .kpi-val {
+      font-size: 1.6rem;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, white, var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .kpi-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Highlight quote */
+    .highlight {
+      background: rgba(0,255,136,0.06);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 20px;
+      margin: 20px 0;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .highlight strong { color: var(--green); }
+
+    /* Alert box */
+    .alert-box {
+      background: rgba(255,71,87,0.07);
+      border: 1px solid rgba(255,71,87,0.25);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .alert-box .alert-title {
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+    }
+
+    /* Query examples */
+    .queries {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .query-chip {
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      color: #c4b5fd;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    .query-chip::before {
+      content: '❯ ';
+      color: var(--purple);
+      opacity: 0.6;
+    }
+
+    /* Severity badges */
+    .severity-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .badge {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge.critical { background: rgba(255,71,87,0.15); color: #ff6b7a; border: 1px solid rgba(255,71,87,0.3); }
+    .badge.high     { background: rgba(255,107,53,0.15); color: #ff8c6a; border: 1px solid rgba(255,107,53,0.3); }
+    .badge.medium   { background: rgba(255,214,0,0.12); color: #ffe066; border: 1px solid rgba(255,214,0,0.25); }
+    .badge.low      { background: rgba(0,255,136,0.1); color: #00ff88; border: 1px solid rgba(0,255,136,0.25); }
+
+    /* Comparison table */
+    .compare {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+      margin-top: 16px;
+    }
+
+    .compare th {
+      padding: 12px 18px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .compare th:first-child { color: var(--muted); }
+    .compare th:nth-child(2) { color: var(--muted); background: rgba(255,255,255,0.02); }
+    .compare th:nth-child(3) { color: var(--cyan); background: rgba(26,140,255,0.08); border-radius: 8px 8px 0 0; }
+
+    .compare td {
+      padding: 11px 18px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      color: var(--muted);
+      vertical-align: middle;
+    }
+
+    .compare td:nth-child(3) {
+      background: rgba(26,140,255,0.05);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--red);   font-weight: 700; }
+
+    /* Page break helper */
+    .page-break { page-break-before: always; padding-top: 60px; }
+
+    /* Footer */
+    .footer {
+      margin-top: 80px;
+      padding: 40px 0 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer strong { color: var(--cyan); }
+
+    /* Print overrides */
+    @media print {
+      body { background: #050c1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cover { min-height: auto; padding: 80px 60px; }
+      .content { padding: 50px 60px; }
+      .section { page-break-inside: avoid; }
+      .card-grid { page-break-inside: avoid; }
+      .stage { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     COVER PAGE
+════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-grid"></div>
+
+  <div class="cover-badge">Smart India Hackathon · SIH26152</div>
+
+  <div class="cover-logo-wrap">
+    <img src="static/img/netra_logo.png" alt="NETRA Logo" />
+  </div>
+
+  <div class="cover-title">NETRA</div>
+  <div class="cover-subtitle">
+    <span>Network Entity Tracking &amp; Relational Analysis</span><br/>
+    Social Intelligence Platform — Complete Feature Guide
+  </div>
+
+  <div class="cover-divider"></div>
+
+  <div class="cover-tags">
+    <span class="cover-tag">AI-Powered Analysis</span>
+    <span class="cover-tag">Graph Intelligence</span>
+    <span class="cover-tag">Narrative Tracking</span>
+    <span class="cover-tag">Bot Detection</span>
+    <span class="cover-tag">Predictive Forecasting</span>
+    <span class="cover-tag">NLP &amp; Sentiment</span>
+    <span class="cover-tag">Community Detection</span>
+    <span class="cover-tag">Influence Mapping</span>
+  </div>
+
+  <div class="cover-meta">
+    <div>Project &nbsp;<span>NETRA</span></div>
+    <div>Problem ID &nbsp;<span>SIH26152</span></div>
+    <div>Category &nbsp;<span>Social Media Analytics</span></div>
+    <div>Year &nbsp;<span>2026</span></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     CONTENT
+════════════════════════════════════════════════════════ -->
+<div class="content">
+
+  <!-- ── SECTION 1: WHAT IS NETRA ─────────────────────── -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">1</div>
+      <div class="section-title">What is NETRA?</div>
+    </div>
+
+    <div class="intro-box">
+      <p>
+        <strong>NETRA</strong> is an AI-powered Social Intelligence Platform that watches social media in real time
+        and converts raw data into <strong>clear, actionable intelligence</strong>. Think of it like a smart command
+        center that reads millions of posts, finds patterns humans would miss, and gives analysts precise answers —
+        not just charts.
+      </p>
+      <br/>
+      <p>
+        Most social media tools just show you <em>what happened</em>. NETRA tells you
+        <strong>why it happened, who caused it, and what's coming next.</strong>
+      </p>
+    </div>
+
+    <div class="section-intro">Here are the key questions NETRA can answer instantly:</div>
+
+    <div class="card-grid">
+      <div class="card blue">
+        <span class="card-icon">📡</span>
+        <div class="card-title">What topics are trending right now?</div>
+        <div class="card-body">NETRA tracks topic velocity — how fast a subject is growing — and shows you which ones are rising, peaking, or fading in real time.</div>
+      </div>
+      <div class="card purple">
+        <span class="card-icon">🧬</span>
+        <div class="card-title">What narratives are emerging?</div>
+        <div class="card-body">It detects the <em>stories</em> being told across posts — not just keywords — and groups them into named narratives with a clear stance (positive, negative, neutral).</div>
+      </div>
+      <div class="card green">
+        <span class="card-icon">👑</span>
+        <div class="card-title">Who are the most influential users?</div>
+        <div class="card-body">Using a graph algorithm (similar to Google's PageRank), NETRA ranks which accounts have the most real-world impact on the conversation.</div>
+      </div>
+      <div class="card orange">
+        <span class="card-icon">🌐</span>
+        <div class="card-title">How is information spreading?</div>
+        <div class="card-body">NETRA traces the exact path a piece of content travels — from the original poster to every person who amplified it — and measures its spread speed.</div>
+      </div>
+      <div class="card red">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">Are there bots or fake accounts?</div>
+        <div class="card-body">An automated detection engine gives every account a "bot probability score" and identifies coordinated groups of fake accounts working together.</div>
+      </div>
+      <div class="card cyan">
+        <span class="card-icon">🔮</span>
+        <div class="card-title">What topics will trend next?</div>
+        <div class="card-body">NETRA's predictive engine forecasts topic trajectories 24 to 72 hours into the future — so analysts can act before a crisis, not after.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 2: THE 10-STAGE PIPELINE ─────────────── -->
+  <div class="section page-break">
+    <div class="section-label">
+      <div class="section-num">2</div>
+      <div class="section-title">The 10-Stage Intelligence Pipeline</div>
+    </div>
+
+    <div class="section-intro">
+      Every time NETRA analyzes data, it passes through 10 specialist AI engines — one after another — each adding a new layer of intelligence. Here's what each engine does in plain language:
+    </div>
+
+    <div class="pipeline">
+
+      <div class="stage">
+        <div class="stage-num">01</div>
+        <div class="stage-body">
+          <div class="stage-name">Entity Extractor</div>
+          <div class="stage-desc">Reads every post and picks out the important "things" — people's names, organizations, locations, and topic tags like IndiaAI, CyberSecurity, StockRally, NationalSecurity, and ClimateAction. Like a highlighter that marks the most important words automatically.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">02</div>
+        <div class="stage-body">
+          <div class="stage-name">Sentiment Engine</div>
+          <div class="stage-desc">Goes beyond "positive / negative" and measures 5 emotions in each post: <strong>Fear, Anger, Joy, Trust,</strong> and <strong>Urgency</strong>. A post about a cyberattack might score high on Fear and Urgency — this nuance matters for real intelligence work.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">03</div>
+        <div class="stage-body">
+          <div class="stage-name">Topic Engine</div>
+          <div class="stage-desc">Tracks every topic's <em>velocity</em> — how fast it's growing — and assigns a lifecycle stage: <strong>Emerging → Accelerating → Peaking → Stabilizing → Decaying</strong>. Knowing a topic is "Accelerating" tells analysts to pay close attention right now.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">04</div>
+        <div class="stage-body">
+          <div class="stage-name">Narrative Engine</div>
+          <div class="stage-desc">A narrative is a <em>story</em> being told, not just a keyword. This engine groups posts into named narratives (e.g., "AI Regulation Debate", "Data Privacy Concerns") and identifies who is pushing each story and what angle they're taking.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">05</div>
+        <div class="stage-body">
+          <div class="stage-name">Community Detection Engine</div>
+          <div class="stage-desc">Finds natural clusters of accounts that interact with each other — using the <strong>Louvain algorithm</strong> (a graph math technique). Each cluster gets a label like "Tech Journalists", "Policy Advocates", or "Amplifier Network". Understanding communities reveals who is coordinating.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">06</div>
+        <div class="stage-body">
+          <div class="stage-name">Influence Engine</div>
+          <div class="stage-desc">Calculates who really matters in the conversation — not just by follower count, but by how central they are in the network. Uses a custom <strong>PageRank algorithm</strong> (same math Google uses to rank web pages) plus betweenness centrality to find "bridge" accounts connecting different communities.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">07</div>
+        <div class="stage-body">
+          <div class="stage-name">Propagation Engine</div>
+          <div class="stage-desc">Traces how content spreads from its origin. Builds <strong>cascade trees</strong> showing the exact path of retweets/shares, measures diffusion speed, and calculates an <strong>R₀ virality index</strong> (borrowed from epidemiology) — R₀ above 1.0 means the content is "going viral".</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">08</div>
+        <div class="stage-body">
+          <div class="stage-name">Graph Engine</div>
+          <div class="stage-desc">Builds the full <strong>Knowledge Graph</strong> — a visual map of the entire social landscape. Nodes represent accounts and topics; edges represent interactions. This is what powers the constellation network visualization you see on the dashboard.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">09</div>
+        <div class="stage-body">
+          <div class="stage-name">Bot Detection Engine</div>
+          <div class="stage-desc">Gives every account a <strong>bot probability score (0–100)</strong>. Accounts score higher if they post at inhuman speeds, have suspicious follower/following ratios, or show copy-paste behavior. Also detects <strong>Coordinated Inauthentic Behavior (CIB)</strong> — groups of fake accounts working as a team.</div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">10</div>
+        <div class="stage-body">
+          <div class="stage-name">Predictive Engine</div>
+          <div class="stage-desc">The final stage looks at all the data and forecasts the future — which topics will trend in the <strong>next 24, 48, and 72 hours</strong>, with a confidence percentage. This gives decision-makers time to respond before situations escalate.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 3: DASHBOARD UI ──────────────────────── -->
+  <div class="section page-break">
+    <div class="section-label">
+      <div class="section-num">3</div>
+      <div class="section-title">Dashboard — What You See &amp; What It Means</div>
+    </div>
+
+    <div class="section-intro">The NETRA dashboard is designed to give analysts everything they need at a glance — without having to dig through menus. Here's every section explained:</div>
+
+    <!-- KPIs -->
+    <div style="margin-bottom: 32px;">
+      <div style="font-size:0.88rem; font-weight:700; color:white; margin-bottom:14px; letter-spacing:0.03em;">📊 4 Intelligence Metrics (Top Row)</div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <span class="kpi-val">12.4K</span>
+          <div class="kpi-label">Total Posts</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-val">23</span>
+          <div class="kpi-label">Active Narratives</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-val">87.3</span>
+          <div class="kpi-label">Influence Score</div>
+        </div>
+        <div class="kpi">
+          <span class="kpi-val">14%</span>
+          <div class="kpi-label">Bot Activity</div>
+        </div>
+      </div>
+      <div style="font-size:0.8rem; color: var(--muted); line-height:1.75;">
+        Each card has a small <strong style="color:var(--cyan)">sparkline</strong> — a tiny chart showing whether that metric is rising or falling. At a glance, analysts can see if bot activity is spiking or if new narratives are suddenly appearing.
+      </div>
+    </div>
+
+    <!-- Graph -->
+    <div class="card blue" style="margin-bottom: 20px; grid-column: span 2;">
+      <span class="card-icon">🕸️</span>
+      <div class="card-title">Constellation Network Graph (Center)</div>
+      <div class="card-body" style="font-size:0.85rem; line-height:1.8;">
+        This is NETRA's signature view — a <strong style="color:var(--cyan)">live knowledge graph</strong> where every dot (node) is an account or topic, and every line (edge) is an interaction like a retweet or mention.<br/><br/>
+        <strong style="color:white;">Bigger nodes</strong> = more influential accounts &nbsp;|&nbsp; <strong style="color:white;">Different colors</strong> = different communities &nbsp;|&nbsp; <strong style="color:white;">Thicker lines</strong> = stronger connections<br/><br/>
+        Analysts can zoom in, drag nodes, pin important accounts, and switch between different layout styles. A minimap in the corner gives an overview of the full network at all times.
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-bottom: 20px;">
+      <div class="card purple">
+        <span class="card-icon">📋</span>
+        <div class="card-title">Trending Narratives Panel</div>
+        <div class="card-body">Shows the top 5 active narratives with their topic tag, sentiment (positive/negative/neutral), and an arrow showing if they're growing ↑ or shrinking ↓. Updated in real time.</div>
+      </div>
+      <div class="card green">
+        <span class="card-icon">🟢</span>
+        <div class="card-title">Sentiment Overview</div>
+        <div class="card-body">A donut chart showing the overall mood of all posts — how much is positive, negative, or neutral. A trend line below shows how sentiment shifted over the selected time window.</div>
+      </div>
+    </div>
+
+    <!-- Bottom 4 cards -->
+    <div style="font-size:0.88rem; font-weight:700; color:white; margin-bottom:14px; letter-spacing:0.03em;">📂 4 Bottom Information Cards</div>
+
+    <div class="card-grid">
+      <div class="card blue">
+        <span class="card-icon">📰</span>
+        <div class="card-title">Recent Posts</div>
+        <div class="card-body">A live feed of the latest analyzed posts — shows the account name, post content, which topic it belongs to, and its sentiment badge. Lets analysts quickly spot what's being said right now.</div>
+      </div>
+      <div class="card cyan">
+        <span class="card-icon">👥</span>
+        <div class="card-title">Key Communities</div>
+        <div class="card-body">Shows the most active communities with progress bars indicating their relative size and activity level. Clicking a community reveals its top members, shared topics, and influence score.</div>
+      </div>
+      <div class="card red">
+        <span class="card-icon">⚠️</span>
+        <div class="card-title">Risk &amp; Alerts</div>
+        <div class="card-body">Color-coded alerts for threats that need attention — bot swarms, coordinated campaigns, rapidly spreading misinformation. Each alert has a severity level:</div>
+      </div>
+      <div class="card purple">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">AI Assistant Beta</div>
+        <div class="card-body">A chat interface where analysts type questions in plain English and get structured intelligence answers immediately — no need to know SQL or code.</div>
+      </div>
+    </div>
+
+    <div class="severity-row" style="margin-top: 16px;">
+      <span class="badge critical">🔴 Critical</span>
+      <span class="badge high">🟠 High</span>
+      <span class="badge medium">🟡 Medium</span>
+      <span class="badge low">🟢 Low</span>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 4: SIDEBAR NAVIGATION ────────────────── -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">4</div>
+      <div class="section-title">Sidebar Navigation — 9 Specialized Views</div>
+    </div>
+
+    <div class="section-intro">The left sidebar gives access to 9 deep-dive views, each powered by a different engine from the pipeline:</div>
+
+    <table class="nav-table">
+      <thead>
+        <tr>
+          <th>View</th>
+          <th>What You Get</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tab-icon">🏠</span>Overview</td>
+          <td>The main dashboard — all KPI cards, network graph, narratives, sentiment, and alerts in one screen.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">🕸️</span>Network Explorer</td>
+          <td>Full interactive version of the knowledge graph. Explore every node and edge, trace relationships, find the shortest path between any two accounts or topics.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">🧬</span>Narratives</td>
+          <td>Deep dive into all detected narratives — their keywords, emotional stance, which accounts are driving them, and how they've evolved over time.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">👑</span>Influencers</td>
+          <td>Ranked list of the most influential accounts with their PageRank score, follower-to-following ratio, engagement rate, and which community they belong to.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">👥</span>Communities</td>
+          <td>Cards for each detected community — with a label (e.g., "Amplifier Network"), its size, top shared topics, key members, and overall sentiment.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">🌊</span>Propagation</td>
+          <td>Visual cascade trees showing exactly how specific content spread — who posted it first, who retweeted it, who amplified it further, and how fast at each step.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">🤖</span>Bot Detection</td>
+          <td>List of flagged suspicious accounts with their bot probability score, the behavior patterns that triggered the flag, and any CIB (coordinated group) they belong to.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">🔮</span>Predictive</td>
+          <td>Forecast charts for the next 24h / 48h / 72h — showing which topics are expected to grow, their predicted volume, and a confidence percentage for each forecast.</td>
+        </tr>
+        <tr>
+          <td><span class="tab-icon">📄</span>Reports</td>
+          <td>Export a full intelligence dossier (JSON format) with all findings — entities, narratives, communities, influencers, bots, and predictions — ready for briefings.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ── SECTION 5: AI ASSISTANT ───────────────────────── -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">5</div>
+      <div class="section-title">AI Assistant — Ask Questions in Plain English</div>
+    </div>
+
+    <div class="section-intro">
+      The AI Assistant is one of NETRA's most powerful features. Instead of navigating menus or running queries, analysts simply type a question — and NETRA understands, routes it to the right engine, and returns a structured answer in seconds.
+    </div>
+
+    <div class="highlight">
+      <strong>No technical knowledge needed.</strong> The assistant understands natural language — you don't need to know how to code, write SQL, or understand graph theory to get deep intelligence out of NETRA.
+    </div>
+
+    <div style="font-size:0.85rem; color:var(--muted); margin: 16px 0 10px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;">Example questions you can ask:</div>
+
+    <div class="queries">
+      <div class="query-chip">Who are the most influential accounts in the CyberSecurity cluster?</div>
+      <div class="query-chip">What caused the IndiaAI narrative to spike today?</div>
+      <div class="query-chip">Are there any coordinated bot campaigns active right now?</div>
+      <div class="query-chip">How did this content spread — show me the cascade path?</div>
+      <div class="query-chip">Which topics are likely to trend in the next 48 hours?</div>
+      <div class="query-chip">Which community is driving the StockRally conversation?</div>
+    </div>
+
+    <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.8;">
+      The assistant handles <strong style="color:var(--text);">6 query categories</strong>: Influence Analysis, Community Insights, Trend Root Cause, Cascade/Propagation, Bot Alerts, and Predictive Forecasting. Quick-action chips at the top let users one-click common queries without typing.
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 6: BOT DETECTION ─────────────────────── -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">6</div>
+      <div class="section-title">Bot Detection &amp; Threat Intelligence</div>
+    </div>
+
+    <div class="section-intro">
+      NETRA's bot detection is built for real-world government and law enforcement use — not just catching obvious spam bots, but detecting <em>sophisticated coordinated influence operations</em>.
+    </div>
+
+    <div class="card-grid">
+      <div class="card red">
+        <span class="card-icon">🔍</span>
+        <div class="card-title">Individual Account Scoring</div>
+        <div class="card-body">Every account gets a bot probability score from 0 to 100. Red flags include: posting at inhuman frequency, suspicious follower-to-following ratios, repetitive copy-paste content, and account age vs. activity patterns.</div>
+      </div>
+      <div class="card orange">
+        <span class="card-icon">🕸️</span>
+        <div class="card-title">CIB Cluster Detection</div>
+        <div class="card-body">Coordinated Inauthentic Behavior (CIB) — groups of accounts that work together to artificially amplify content. NETRA finds these clusters by analyzing synchronized posting times, shared hashtag usage, and mutual amplification patterns.</div>
+      </div>
+    </div>
+
+    <div class="alert-box">
+      <div class="alert-title">⚠️ Why This Matters for SIH Judges</div>
+      This is directly relevant to India's national security challenges. Foreign influence operations, election interference campaigns, and astroturfing attacks use exactly these techniques. NETRA can detect them automatically — something no basic social media dashboard can do.
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 7: NETRA vs OTHERS ───────────────────── -->
+  <div class="section page-break">
+    <div class="section-label">
+      <div class="section-num">7</div>
+      <div class="section-title">NETRA vs. Standard Social Media Dashboards</div>
+    </div>
+
+    <div class="section-intro">Here's why NETRA is fundamentally different from what most teams build for this problem statement:</div>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Typical Dashboard</th>
+          <th>✦ NETRA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sentiment Analysis</td>
+          <td><span class="check">✓</span> Basic positive/negative</td>
+          <td><span class="check">✓</span> 5-dimensional emotion vectors</td>
+        </tr>
+        <tr>
+          <td>Topic Trending</td>
+          <td><span class="check">✓</span> Keyword frequency</td>
+          <td><span class="check">✓</span> Velocity + lifecycle stages</td>
+        </tr>
+        <tr>
+          <td>Narrative Detection</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> Named narratives + stance analysis</td>
+        </tr>
+        <tr>
+          <td>Graph / Network Analysis</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> Full knowledge graph + PageRank</td>
+        </tr>
+        <tr>
+          <td>Community Detection</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> Louvain algorithm, labeled clusters</td>
+        </tr>
+        <tr>
+          <td>Information Propagation</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> Cascade trees + R₀ virality index</td>
+        </tr>
+        <tr>
+          <td>Bot / CIB Detection</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> Probability scoring + cluster maps</td>
+        </tr>
+        <tr>
+          <td>Predictive Forecasting</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> 24h–72h trajectory forecasts</td>
+        </tr>
+        <tr>
+          <td>Natural Language AI Query</td>
+          <td><span class="cross">✗</span> Not available</td>
+          <td><span class="check">✓</span> AI Assistant with 6 query types</td>
+        </tr>
+        <tr>
+          <td>Intelligence Export</td>
+          <td><span class="cross">✗</span> Basic CSV</td>
+          <td><span class="check">✓</span> Full dossier (JSON) for briefings</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ── SECTION 8: TOPICS COVERED ────────────────────── -->
+  <div class="section">
+    <div class="section-label">
+      <div class="section-num">8</div>
+      <div class="section-title">Topic Domains NETRA Monitors</div>
+    </div>
+
+    <div class="section-intro">NETRA is pre-configured to monitor 5 key topic domains relevant to India's digital landscape:</div>
+
+    <div class="card-grid">
+      <div class="card blue">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">IndiaAI</div>
+        <div class="card-body">Artificial intelligence policy, regulation debates, AI governance, tech startups, and India's national AI mission — tracking how the AI narrative evolves across stakeholder groups.</div>
+      </div>
+      <div class="card red">
+        <span class="card-icon">🛡️</span>
+        <div class="card-title">CyberSecurity</div>
+        <div class="card-body">Cyberattacks, data breaches, vulnerability disclosures, cybercrime alerts — tracking threats and public response to digital security incidents in real time.</div>
+      </div>
+      <div class="card green">
+        <span class="card-icon">📈</span>
+        <div class="card-title">StockRally</div>
+        <div class="card-body">Financial market conversations, stock tips, trading sentiment, market manipulation signals — identifying coordinated pump-and-dump narratives and retail investor sentiment.</div>
+      </div>
+      <div class="card orange">
+        <span class="card-icon">🇮🇳</span>
+        <div class="card-title">NationalSecurity</div>
+        <div class="card-body">Defence, border security, geopolitical events, military developments — monitoring narratives that could affect national security discourse or be used in influence operations.</div>
+      </div>
+      <div class="card cyan">
+        <span class="card-icon">🌱</span>
+        <div class="card-title">ClimateAction</div>
+        <div class="card-body">Climate policy, environmental protests, sustainability debates, COP summits — tracking how climate narratives are shaped and who the key advocates and critics are.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <div class="footer">
+    <div style="font-size:1.1rem; font-weight:800; letter-spacing:0.15em; color:white; margin-bottom:8px;">NETRA</div>
+    <div>Network Entity Tracking &amp; Relational Analysis</div>
+    <div style="margin-top:6px;">Smart India Hackathon 2026 &nbsp;·&nbsp; Problem ID <strong>SIH26152</strong> &nbsp;·&nbsp; Social Media Analytics Platform</div>
+    <div style="margin-top:12px; font-size:0.68rem; opacity:0.5;">
+      This document is prepared for evaluation purposes. NETRA is a prototype intelligence platform.
+    </div>
+  </div>
+
+</div>
+
+<!-- Print button (hidden when printing) -->
+<div style="position:fixed; bottom:28px; right:28px; z-index:999;" class="no-print">
+  <button onclick="window.print()" style="
+    background: linear-gradient(135deg, #1a8cff, #00d4ff);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(26,140,255,0.4);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.04em;
+  ">
+    🖨️ &nbsp; Save as PDF
+  </button>
+</div>
+
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    body { margin: 0; }
+  }
+</style>
+
+</body>
+</html>

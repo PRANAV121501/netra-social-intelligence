@@ -1,0 +1,57 @@
+"""
+Test Flask REST endpoints for NETRA Social Intelligence Platform.
+"""
+
+from app import app
+import json
+
+def test_endpoints():
+    client = app.test_client()
+
+    # 1. Main UI
+    res = client.get("/")
+    assert res.status_code == 200, f"Root returned {res.status_code}"
+    print("GET / -> 200 OK")
+
+    # 2. Pipeline state
+    res = client.get("/api/pipeline/state")
+    assert res.status_code == 200, f"/api/pipeline/state returned {res.status_code}"
+    data = res.get_json()
+    assert "summary_kpis" in data
+    assert "trends" in data
+    assert "influencers" in data
+    assert "knowledge_graph" in data
+    print(f"GET /api/pipeline/state -> 200 OK (KPIs: {data['summary_kpis']})")
+
+    # 3. AI Assistant query
+    res = client.post("/api/pipeline/query", json={"prompt": "Show top influencers discussing AI"})
+    assert res.status_code == 200
+    ai_data = res.get_json()
+    assert "executive_briefing" in ai_data
+    print("POST /api/pipeline/query -> 200 OK")
+
+    # 4. Graph path finding
+    res = client.get("/api/pipeline/path?source=TechInsights&target=IndiaAI")
+    assert res.status_code == 200
+    path_data = res.get_json()
+    assert path_data.get("found") is True
+    print(f"GET /api/pipeline/path -> 200 OK (path: {path_data['path']})")
+
+    # 5. Live Simulation
+    res = client.post("/api/pipeline/simulate")
+    assert res.status_code == 200
+    sim_data = res.get_json()
+    assert sim_data.get("status") == "simulated"
+    print("POST /api/pipeline/simulate -> 200 OK")
+
+    # 6. Dossier Export
+    res = client.get("/api/export/dossier")
+    assert res.status_code == 200
+    dossier = res.get_json()
+    assert "classification" in dossier
+    print("GET /api/export/dossier -> 200 OK")
+
+    print("\nALL FLASK ENDPOINTS VERIFIED & WORKING FLAWLESSLY!")
+
+if __name__ == "__main__":
+    test_endpoints()

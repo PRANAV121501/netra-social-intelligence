@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+*.spec
+*.log
+.DS_Store
+Thumbs.db
+netra_desktop_dist/
