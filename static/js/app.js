@@ -889,17 +889,19 @@ function renderDemographicsTab() {
     // Age Distribution
     const ageEl = document.getElementById("demo-age-chart");
     if (ageEl && demo.age_distribution) {
-        ageEl.innerHTML = demo.age_distribution.map(item => `
+        ageEl.innerHTML = demo.age_distribution.map(item => {
+            const label = item.name || item.bracket || "Unknown";
+            return `
             <div style="margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-                    <span style="font-weight:600; color:#e2e8f0;">${item.bracket} Years</span>
+                    <span style="font-weight:600; color:#e2e8f0;">${label} Years</span>
                     <span style="color:#38bdf8; font-family:var(--font-mono);">${item.count} users (${item.pct}%)</span>
                 </div>
                 <div style="height:8px; background:#1e293b; border-radius:4px; overflow:hidden;">
                     <div style="height:100%; width:${item.pct}%; background:linear-gradient(90deg, #0284c7, #38bdf8); border-radius:4px;"></div>
                 </div>
             </div>
-        `).join("");
+        `;}).join("");
     }
 
     // Language Distribution
@@ -907,18 +909,19 @@ function renderDemographicsTab() {
     if (langEl && demo.language_distribution) {
         const langColors = {"English": "#3b82f6", "Hindi": "#f59e0b", "Tamil": "#ec4899", "Telugu": "#8b5cf6", "Bengali": "#10b981", "Marathi": "#06b6d4"};
         langEl.innerHTML = demo.language_distribution.map(item => {
-            const col = langColors[item.language] || "#0284c7";
+            const lang = item.name || item.language || "English";
+            const col = langColors[lang] || "#0284c7";
             return `
             <div style="margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-                    <span style="font-weight:600; color:#e2e8f0;">${item.language}</span>
+                    <span style="font-weight:600; color:#e2e8f0;">${lang}</span>
                     <span style="color:${col}; font-family:var(--font-mono);">${item.count} (${item.pct}%)</span>
                 </div>
                 <div style="height:8px; background:#1e293b; border-radius:4px; overflow:hidden;">
                     <div style="height:100%; width:${item.pct}%; background:${col}; border-radius:4px;"></div>
                 </div>
             </div>
-        `}).join("");
+        `;}).join("");
     }
 
     // Persona Distribution
@@ -928,31 +931,35 @@ function renderDemographicsTab() {
             "Power User": "⚡", "Influencer": "⭐", "Active Citizen": "👤",
             "Casual User": "💬", "Bot-Risk": "🤖"
         };
-        personaEl.innerHTML = demo.persona_distribution.map(item => `
+        personaEl.innerHTML = demo.persona_distribution.map(item => {
+            const pName = item.name || item.persona || "User";
+            return `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#111a2d; border-radius:6px; margin-bottom:8px; border:1px solid #1e293b;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span>${personaIcons[item.persona] || "🔹"}</span>
-                    <span style="font-size:12.5px; font-weight:600; color:#f1f5f9;">${item.persona}</span>
+                    <span>${personaIcons[pName] || "🔹"}</span>
+                    <span style="font-size:12.5px; font-weight:600; color:#f1f5f9;">${pName}</span>
                 </div>
-                <span style="font-size:11.5px; font-family:var(--font-mono); color:${item.persona === 'Bot-Risk' ? '#ef4444' : '#38bdf8'}; font-weight:700;">
+                <span style="font-size:11.5px; font-family:var(--font-mono); color:${pName === 'Bot-Risk' ? '#ef4444' : '#38bdf8'}; font-weight:700;">
                     ${item.count} (${item.pct}%)
                 </span>
             </div>
-        `).join("");
+        `;}).join("");
     }
 
     // Professional Interests
     const interestsEl = document.getElementById("demo-interests-chart");
     if (interestsEl && demo.interest_distribution) {
-        interestsEl.innerHTML = demo.interest_distribution.map(item => `
+        interestsEl.innerHTML = demo.interest_distribution.map(item => {
+            const intName = item.name || item.interest || "Interest";
+            return `
             <div style="background:#111a2d; border:1px solid #1e293b; padding:10px 14px; border-radius:8px; display:flex; align-items:center; gap:10px;">
                 <div style="width:32px; height:32px; border-radius:6px; background:rgba(56,189,248,0.1); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:14px;">🎯</div>
                 <div>
-                    <div style="font-size:12px; font-weight:600; color:#fff;">${item.interest}</div>
+                    <div style="font-size:12px; font-weight:600; color:#fff;">${intName}</div>
                     <div style="font-size:11px; color:#94a3b8; font-family:var(--font-mono);">${item.count} posts • ${item.pct}% volume</div>
                 </div>
             </div>
-        `).join("");
+        `;}).join("");
     }
 
     // Sentiment by Age
