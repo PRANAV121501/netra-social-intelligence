@@ -753,10 +753,13 @@
 
       <!-- ===================== DEMOGRAPHICS TAB ===================== -->
       <div id="tab-demographics" class="tab-panel" style="display:none; padding:24px;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Audience Demographics Intelligence</h2>
-          <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px; font-weight:700;">AI INFERRED</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Audience Demographics Intelligence</h2>
+            <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px; font-weight:700;">AI INFERRED</span>
+          </div>
+          <button class="control-btn active" onclick="switchTab('tab-dashboard')">← Back to Dashboard</button>
         </div>
         <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Anonymized audience profiling inferred from vocabulary, behavioral patterns, engagement signals, and geo indicators.</p>
 
@@ -791,9 +794,12 @@
 
       <!-- ===================== SENTIMENT TIMELINE TAB ===================== -->
       <div id="tab-timeline" class="tab-panel" style="display:none; padding:24px;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Sentiment Timeline & Emotional Trajectory</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Sentiment Timeline & Emotional Trajectory</h2>
+          </div>
+          <button class="control-btn active" onclick="switchTab('tab-dashboard')">← Back to Dashboard</button>
         </div>
         <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Chronological sentiment trajectory showing how public emotion evolves over time across all monitored platforms.</p>
 
@@ -801,7 +807,9 @@
           <!-- Main Timeline Chart -->
           <div class="intel-card">
             <div class="card-header-label">Sentiment Score Over Time</div>
-            <canvas id="sentiment-timeline-chart" style="width:100%; height:260px; margin-top:12px;"></canvas>
+            <div style="position:relative; height:260px; width:100%; margin-top:12px;">
+              <canvas id="sentiment-timeline-chart"></canvas>
+            </div>
           </div>
           <!-- Emotion Breakdown Over Time -->
           <div class="intel-card">
@@ -824,11 +832,15 @@
 
       <!-- ===================== DATA SOURCES TAB ===================== -->
       <div id="tab-datasources" class="tab-panel" style="display:none; padding:24px;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Platform Data Source Connectors</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Platform Data Source Connectors</h2>
+          </div>
+          <button class="control-btn active" onclick="switchTab('tab-dashboard')">← Back to Dashboard</button>
         </div>
         <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Configure live API connections for real-time data ingestion. Without keys, NETRA runs on sample intelligence data.</p>
+
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
 

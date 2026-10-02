@@ -992,98 +992,104 @@ function renderSentimentTimeline() {
 
     // Main Chart.js Timeline Chart
     const canvas = document.getElementById("sentiment-timeline-chart");
-    if (canvas && window.Chart) {
-        if (_timelineChartInstance) {
-            _timelineChartInstance.destroy();
-        }
-
+    if (canvas) {
         let labels = [];
         let scores = [];
         let posPct = [];
         let negPct = [];
 
-        if (timeline.length > 1) {
-            labels = timeline.map(t => t.date);
+        if (timeline.length > 0) {
+            labels = timeline.map(t => t.date.length > 10 ? t.date.slice(5) : t.date);
             scores = timeline.map(t => t.avg_score);
             posPct = timeline.map(t => t.positive_pct);
             negPct = timeline.map(t => t.negative_pct);
         } else {
-            const now = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(now);
-                d.setDate(d.getDate() - i);
-                labels.push(d.toISOString().slice(5, 10));
-            }
-            scores = [-0.15, -0.32, -0.05, 0.18, 0.42, 0.28, 0.35];
-            posPct = [25, 18, 38, 55, 68, 58, 62];
-            negPct = [60, 72, 45, 28, 15, 22, 19];
+            labels = ["04:00", "05:00", "06:00", "07:00", "08:00"];
+            scores = [0.35, 0.25, 0.0, 0.0, -0.41];
+            posPct = [100, 100, 0, 0, 0];
+            negPct = [0, 0, 0, 0, 67];
         }
 
-        const ctx = canvas.getContext("2d");
-        _timelineChartInstance = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "Compound Sentiment Index (-1 to +1)",
-                        data: scores,
-                        borderColor: "#38bdf8",
-                        backgroundColor: "rgba(56, 189, 248, 0.1)",
-                        tension: 0.35,
-                        fill: true,
-                        yAxisID: "y"
-                    },
-                    {
-                        label: "Positive %",
-                        data: posPct,
-                        borderColor: "#10b981",
-                        borderDash: [4, 4],
-                        tension: 0.35,
-                        yAxisID: "y1"
-                    },
-                    {
-                        label: "Negative %",
-                        data: negPct,
-                        borderColor: "#ef4444",
-                        borderDash: [4, 4],
-                        tension: 0.35,
-                        yAxisID: "y1"
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: { color: "#94a3b8" },
-                        grid: { color: "rgba(51,65,85,0.3)" }
-                    },
-                    y: {
-                        type: "linear",
-                        display: true,
-                        position: "left",
-                        min: -1.0,
-                        max: 1.0,
-                        ticks: { color: "#38bdf8" },
-                        grid: { color: "rgba(51,65,85,0.3)" }
-                    },
-                    y1: {
-                        type: "linear",
-                        display: true,
-                        position: "right",
-                        min: 0,
-                        max: 100,
-                        ticks: { color: "#94a3b8" },
-                        grid: { drawOnChartArea: false }
-                    }
-                },
-                plugins: {
-                    legend: { labels: { color: "#e2e8f0", font: { size: 11 } } }
-                }
+        if (window.Chart) {
+            if (_timelineChartInstance) {
+                try { _timelineChartInstance.destroy(); } catch(e){}
+                _timelineChartInstance = null;
             }
-        });
+
+            const ctx = canvas.getContext("2d");
+            _timelineChartInstance = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Compound Sentiment Index (-1 to +1)",
+                            data: scores,
+                            borderColor: "#38bdf8",
+                            backgroundColor: "rgba(56, 189, 248, 0.12)",
+                            pointBackgroundColor: "#38bdf8",
+                            pointRadius: 4,
+                            tension: 0.35,
+                            fill: true,
+                            yAxisID: "y"
+                        },
+                        {
+                            label: "Positive %",
+                            data: posPct,
+                            borderColor: "#10b981",
+                            borderDash: [4, 4],
+                            pointRadius: 3,
+                            tension: 0.35,
+                            yAxisID: "y1"
+                        },
+                        {
+                            label: "Negative %",
+                            data: negPct,
+                            borderColor: "#ef4444",
+                            borderDash: [4, 4],
+                            pointRadius: 3,
+                            tension: 0.35,
+                            yAxisID: "y1"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: { color: "#94a3b8", font: { size: 11 } },
+                            grid: { color: "rgba(51,65,85,0.3)" }
+                        },
+                        y: {
+                            type: "linear",
+                            display: true,
+                            position: "left",
+                            min: -1.0,
+                            max: 1.0,
+                            ticks: { color: "#38bdf8", font: { size: 10 } },
+                            grid: { color: "rgba(51,65,85,0.3)" }
+                        },
+                        y1: {
+                            type: "linear",
+                            display: true,
+                            position: "right",
+                            min: 0,
+                            max: 100,
+                            ticks: { color: "#94a3b8", font: { size: 10 } },
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: "#e2e8f0", font: { size: 11 } } },
+                        tooltip: {
+                            mode: "index",
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
     }
 
     // Dominant Emotions Timeline
@@ -1092,27 +1098,28 @@ function renderSentimentTimeline() {
         const emotionIcons = {
             fear: "😨 Fear", anxiety: "😰 Anxiety", anger: "😡 Anger",
             joy: "😊 Joy", excitement: "🔥 Excitement", trust: "🛡️ Trust",
-            urgency: "⚡ Urgency", sarcasm: "😏 Sarcasm"
+            urgency: "⚡ Urgency", sarcasm: "😏 Sarcasm", neutral: "⚪ Neutral"
         };
-        const sampleEmos = [
-            { date: "Day -3", emo: "fear", val: "Critical (0.82)", note: "Triggered by Power Substation disinformation" },
-            { date: "Day -2", emo: "anxiety", val: "Elevated (0.65)", note: "Viral echo chambers debating grid reliability" },
-            { date: "Day -1", emo: "trust", val: "Rising (0.74)", note: "PIB and CERT-In advisories actively debunking" },
-            { date: "Today", emo: "excitement", val: "Dominant (0.78)", note: "National AI mission and space sector announcements" }
-        ];
-        emoList.innerHTML = sampleEmos.map(item => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#111a2d; border-radius:6px; margin-bottom:8px; border:1px solid #1e293b;">
-                <div>
-                    <span style="font-weight:700; color:#38bdf8; font-size:12px; margin-right:8px;">${item.date}</span>
-                    <span style="font-size:12.5px; color:#fff; font-weight:600;">${emotionIcons[item.emo] || item.emo}</span>
-                    <div style="font-size:11px; color:#64748b; margin-top:2px;">${item.note}</div>
+        if (timeline.length > 0) {
+            emoList.innerHTML = timeline.map(item => {
+                const isPos = item.avg_score >= 0;
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#111a2d; border-radius:6px; margin-bottom:8px; border:1px solid #1e293b;">
+                    <div>
+                        <span style="font-weight:700; color:#38bdf8; font-size:12px; margin-right:8px;">${item.date}</span>
+                        <span style="font-size:12.5px; color:#fff; font-weight:600;">${emotionIcons[item.dominant_emotion] || item.dominant_emotion}</span>
+                        <div style="font-size:11px; color:#64748b; margin-top:2px;">Volume: ${item.post_count} posts | Positive: ${item.positive_pct}% | Negative: ${item.negative_pct}%</div>
+                    </div>
+                    <span style="background:${isPos ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color:${isPos ? '#10b981' : '#ef4444'}; border:1px solid ${isPos ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; padding:4px 10px; border-radius:12px; font-size:11px; font-family:var(--font-mono); font-weight:700;">
+                        ${isPos ? '+' : ''}${item.avg_score.toFixed(2)}
+                    </span>
                 </div>
-                <span style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:3px 8px; border-radius:12px; font-size:11px; font-family:var(--font-mono);">
-                    ${item.val}
-                </span>
-            </div>
-        `).join("");
+            `;}).join("");
+        } else {
+            emoList.innerHTML = `<div style="font-size:12px; color:#64748b;">No timeline entries recorded yet.</div>`;
+        }
     }
+
 
     // Sarcasm Statistics
     const sarcasmEl = document.getElementById("sarcasm-stats");

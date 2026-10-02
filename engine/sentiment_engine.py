@@ -195,26 +195,37 @@ class SentimentEngine:
     def build_sentiment_timeline(self, posts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Build a chronological sentiment timeline across all posts.
-        Returns list of {date, avg_score, positive_pct, negative_pct, dominant_emotion}
+        Automatically detects whether to group by hour or by day based on the timestamp span.
+        Returns list of {date, avg_score, positive_pct, negative_pct, neutral_pct, dominant_emotion, post_count}
         """
         from collections import defaultdict
-        daily = defaultdict(lambda: {"scores": [], "emotions": {}})
+        time_buckets = defaultdict(lambda: {"scores": [], "emotions": {}})
 
-        for post in posts:
-            ts = post.get("timestamp", "")[:10]
-            if not ts:
-                continue
+        # Extract all valid timestamps
+        valid_posts = [p for p in posts if p.get("timestamp")]
+        dates = {p["timestamp"][:10] for p in valid_posts if len(p.get("timestamp", "")) >= 10}
+
+        # If timestamps are within <= 2 distinct calendar days, bucket hourly for granular progression
+        use_hourly = len(dates) <= 2
+
+        for post in valid_posts:
+            raw_ts = post["timestamp"]
+            if use_hourly and len(raw_ts) >= 13:
+                bucket_key = raw_ts[:10] + " " + raw_ts[11:13] + ":00"
+            else:
+                bucket_key = raw_ts[:10]
+
             score = post.get("sentiment", {}).get("score", 0.0)
-            daily[ts]["scores"].append(score)
+            time_buckets[bucket_key]["scores"].append(score)
             emotions = post.get("sentiment", {}).get("emotions", {})
             for emotion, val in emotions.items():
-                daily[ts]["emotions"][emotion] = daily[ts]["emotions"].get(emotion, 0) + val
+                time_buckets[bucket_key]["emotions"][emotion] = time_buckets[bucket_key]["emotions"].get(emotion, 0) + val
 
         timeline = []
-        for date in sorted(daily.keys()):
-            d = daily[date]
+        for bucket_key in sorted(time_buckets.keys()):
+            d = time_buckets[bucket_key]
             scores = d["scores"]
-            avg = round(sum(scores) / len(scores), 3) if scores else 0
+            avg = round(sum(scores) / len(scores), 3) if scores else 0.0
             pos = sum(1 for s in scores if s > 0.15)
             neg = sum(1 for s in scores if s < -0.15)
             total = max(len(scores), 1)
@@ -224,7 +235,7 @@ class SentimentEngine:
             dominant = max(emo, key=emo.get) if emo else "neutral"
 
             timeline.append({
-                "date": date,
+                "date": bucket_key,
                 "avg_score": avg,
                 "positive_pct": round(pos / total * 100, 1),
                 "negative_pct": round(neg / total * 100, 1),
@@ -234,3 +245,4 @@ class SentimentEngine:
             })
 
         return timeline
+
