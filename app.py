@@ -37,16 +37,21 @@ def add_header(response):
     response.headers["Expires"] = "0"
     return response
 
-# Initialize master pipeline
-pipeline = IntelligencePipeline()
-
-# Load default sample stream into memory
+# Lazy-initialized globals (deferred to first request for Vercel compatibility)
+pipeline = None
+INITIAL_POSTS = None
+CURRENT_PIPELINE_RESULTS = None
 DATA_FILE = os.path.join(base_dir, "data", "sample_social_stream.json")
-with open(DATA_FILE, "r", encoding="utf-8") as f:
-    INITIAL_POSTS = json.load(f)
 
-# Run pipeline on startup
-CURRENT_PIPELINE_RESULTS = pipeline.run(INITIAL_POSTS)
+def _ensure_initialized():
+    """Lazily initialize the pipeline on first request."""
+    global pipeline, INITIAL_POSTS, CURRENT_PIPELINE_RESULTS
+    if CURRENT_PIPELINE_RESULTS is not None:
+        return
+    pipeline = IntelligencePipeline()
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        INITIAL_POSTS = json.load(f)
+    CURRENT_PIPELINE_RESULTS = pipeline.run(INITIAL_POSTS)
 
 # Analyst / Intelligence Officer Profiles
 PROFILES = {
@@ -71,6 +76,7 @@ def login_required(f):
 
 @app.route("/")
 def index():
+    _ensure_initialized()
     user_key = session.get("user", "analyst")
     profile = PROFILES.get(user_key, PROFILES["analyst"])
     return render_template("index.html", profile=profile)
@@ -93,12 +99,14 @@ def auth_logout():
 @app.route("/api/pipeline/state", methods=["GET"])
 def get_pipeline_state():
     """Returns the complete intelligence pipeline state."""
+    _ensure_initialized()
     global CURRENT_PIPELINE_RESULTS
     return jsonify(CURRENT_PIPELINE_RESULTS)
 
 @app.route("/api/pipeline/run", methods=["POST"])
 def re_run_pipeline():
     """Re-runs the intelligence pipeline with updated or uploaded posts."""
+    _ensure_initialized()
     global CURRENT_PIPELINE_RESULTS
     data = request.get_json()
     if data and "posts" in data and isinstance(data["posts"], list):
@@ -110,6 +118,7 @@ def re_run_pipeline():
 @app.route("/api/pipeline/query", methods=["POST"])
 def assistant_query():
     """AI Tactical Intelligence Assistant endpoint."""
+    _ensure_initialized()
     data = request.get_json() or {}
     prompt = data.get("prompt", "").strip()
     if not prompt:
@@ -120,6 +129,7 @@ def assistant_query():
 @app.route("/api/pipeline/path", methods=["GET"])
 def graph_path():
     """Finds shortest path between two graph entities."""
+    _ensure_initialized()
     source = request.args.get("source", "").strip()
     target = request.args.get("target", "").strip()
     if not source or not target:
@@ -130,6 +140,7 @@ def graph_path():
 @app.route("/api/pipeline/simulate", methods=["POST"])
 def simulate_incoming_stream():
     """Simulates a live breaking post ingestion into the pipeline."""
+    _ensure_initialized()
     global CURRENT_PIPELINE_RESULTS
     new_post = {
         "id": f"post_live_{int(time.time())}",
@@ -154,6 +165,7 @@ def simulate_incoming_stream():
 @app.route("/api/export/dossier", methods=["GET"])
 def export_dossier():
     """Generates an executive Intelligence Dossier in JSON or printable format."""
+    _ensure_initialized()
     state = CURRENT_PIPELINE_RESULTS
     dossier = {
         "classification": "RESTRICTED // LAW ENFORCEMENT & NATIONAL CYBER COMMAND",
@@ -177,6 +189,7 @@ def export_dossier():
 @app.route("/api/pipeline/upload", methods=["POST"])
 def upload_dataset():
     """Ingests custom CSV or JSON dataset from the user and re-runs pipeline."""
+    _ensure_initialized()
     global CURRENT_PIPELINE_RESULTS
     parsed_posts = []
 
@@ -239,6 +252,7 @@ def upload_dataset():
 @app.route("/dossier/print", methods=["GET"])
 def print_dossier():
     """Renders a classified intelligence dossier formatted for printing or PDF export."""
+    _ensure_initialized()
     state = CURRENT_PIPELINE_RESULTS
     return render_template("dossier_print.html", state=state, now=datetime.utcnow().strftime("%d %b %Y %H:%M UTC"))
 
