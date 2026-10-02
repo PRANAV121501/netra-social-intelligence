@@ -155,21 +155,3 @@ python data/synthetic_generator.py
 
 ---
 
-## 👥 Intelligence Access Credentials
-
-| Role | Officer Name | Rank | Access PIN |
-|---|---|---|---|
-| **Admin** | Dir. A. Kulkarni | National Cyber Director | `1111` |
-| **Investigating Officer** | Cmdr. R. Deshmukh | Senior Threat Intel Officer | `2222` |
-| **Analyst** | P. Sharma | OSINT & Graph Intelligence Analyst | `3333` |
-| **Field Operator** | S. Iyer | Tactical Field Operator | `4444` |
-
----
-
-## 🏆 SIH26152 Winning Differentiators
-
-1. **Beyond Static Dashboards**: Models information as a dynamic multi-relational knowledge graph rather than flat bar charts.
-2. **Coordinated Inauthentic Behavior (CIB) Forensics**: Detects automated astroturfing campaigns designed to incite civil panic or manipulate financial markets.
-3. **Information Cascade Physics**: Calculates diffusion velocity and epidemiological-style virality reproduction rates ($R_0$).
-4. **Predictive Horizon**: Gives authorities a 18–24 hour early warning window *before* harmful narratives cross mainstream thresholds.
-5. **AI Assistant Grounding**: Generates actionable, evidence-based tactical briefings with zero hallucinations by anchoring directly to the graph pipeline.
