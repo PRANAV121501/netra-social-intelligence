@@ -670,14 +670,23 @@ async function askAI(promptText, speak = false) {
 
 // ===================== VOICE SEARCH & SPEECH SYNTHESIS =====================
 function initVoiceSearch() {
-    const voiceBtn = document.getElementById("ai-voice-btn");
-    const input = document.getElementById("ai-quick-input");
-    if (!voiceBtn || !input) return;
+    const cardVoiceBtn = document.getElementById("ai-voice-btn");
+    const headerSearchMic = document.getElementById("header-search-voice-btn");
+    const headerVoicePill = document.getElementById("btn-header-voice");
+    const quickInput = document.getElementById("ai-quick-input");
+    const globalInput = document.getElementById("global-search-input");
+
+    const allVoiceBtns = [cardVoiceBtn, headerSearchMic, headerVoicePill].filter(Boolean);
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        voiceBtn.title = "Voice recognition not supported in this browser (use Chrome/Edge)";
-        voiceBtn.style.opacity = "0.5";
+        allVoiceBtns.forEach(btn => {
+            btn.title = "Voice recognition supported in Chrome/Edge/Android";
+            btn.addEventListener("click", () => {
+                alert("Speech Recognition: Please open NETRA in Google Chrome or Microsoft Edge to enable microphone access.");
+                if (quickInput) quickInput.focus();
+            });
+        });
         return;
     }
 
@@ -688,7 +697,7 @@ function initVoiceSearch() {
 
     let isListening = false;
 
-    voiceBtn.addEventListener("click", () => {
+    function startListening(triggerBtn) {
         if (isListening) {
             recognition.stop();
             return;
@@ -696,34 +705,42 @@ function initVoiceSearch() {
         try {
             recognition.start();
             isListening = true;
-            voiceBtn.classList.add("listening");
-            input.placeholder = "Listening... Speak your query";
+            allVoiceBtns.forEach(b => b.classList.add("listening"));
+            if (quickInput) quickInput.placeholder = "Listening... Speak your tactical query";
+            if (globalInput) globalInput.placeholder = "Listening... Speak your tactical query";
         } catch (e) {
             console.error("Speech recognition error:", e);
         }
+    }
+
+    function stopListening() {
+        isListening = false;
+        allVoiceBtns.forEach(b => b.classList.remove("listening"));
+        if (quickInput) quickInput.placeholder = "Type or click 🎙️ to speak question...";
+        if (globalInput) globalInput.placeholder = "Search for a topic, user, hashtag, or ask a question...";
+    }
+
+    allVoiceBtns.forEach(btn => {
+        btn.addEventListener("click", () => startListening(btn));
     });
 
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        input.value = transcript;
-        voiceBtn.classList.remove("listening");
-        input.placeholder = "Type or speak question...";
-        isListening = false;
+        if (quickInput) quickInput.value = transcript;
+        if (globalInput) globalInput.value = transcript;
+        stopListening();
         askAI(transcript, true);
     };
 
     recognition.onerror = () => {
-        voiceBtn.classList.remove("listening");
-        input.placeholder = "Type or speak question...";
-        isListening = false;
+        stopListening();
     };
 
     recognition.onend = () => {
-        voiceBtn.classList.remove("listening");
-        input.placeholder = "Type or speak question...";
-        isListening = false;
+        stopListening();
     };
 }
+
 
 function speakBriefing(text) {
     if (!window.speechSynthesis) return;
