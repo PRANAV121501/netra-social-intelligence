@@ -14,18 +14,26 @@ import time
 import csv
 import io
 from datetime import datetime
+import sys
 from functools import wraps
 
 from engine.pipeline import IntelligencePipeline
 
-app = Flask(__name__)
+# Configure Flask root and assets for standalone PyInstaller EXE or standard Python
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    base_dir = sys._MEIPASS
+    app = Flask(__name__, template_folder=os.path.join(base_dir, "templates"), static_folder=os.path.join(base_dir, "static"))
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    app = Flask(__name__)
+
 app.secret_key = os.environ.get("NETRA_SECRET", "netra-sip-2026-auth-token")
 
 # Initialize master pipeline
 pipeline = IntelligencePipeline()
 
 # Load default sample stream into memory
-DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "sample_social_stream.json")
+DATA_FILE = os.path.join(base_dir, "data", "sample_social_stream.json")
 with open(DATA_FILE, "r", encoding="utf-8") as f:
     INITIAL_POSTS = json.load(f)
 
