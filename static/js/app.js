@@ -10,6 +10,7 @@ let GRAPH_EDGES = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     initNavigationTabs();
+    initMobileMenu();
     initKeyboardShortcuts();
     initGraph();
     loadBackendState();
@@ -25,6 +26,46 @@ function initNavigationTabs() {
             const targetTab = link.getAttribute("data-tab");
             switchTab(targetTab);
         });
+    });
+}
+
+function initMobileMenu() {
+    const menuBtn = document.getElementById("mobile-menu-btn");
+    const sidebar = document.getElementById("netra-sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+
+    if (!menuBtn || !sidebar) return;
+
+    function toggleSidebar() {
+        sidebar.classList.toggle("sidebar-open");
+        if (backdrop) backdrop.classList.toggle("active");
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove("sidebar-open");
+        if (backdrop) backdrop.classList.remove("active");
+    }
+
+    menuBtn.addEventListener("click", toggleSidebar);
+    if (backdrop) backdrop.addEventListener("click", closeSidebar);
+
+    // Auto-close on nav item click when on tablet/mobile screens
+    const navLinks = document.querySelectorAll(".nav-link");
+    navLinks.forEach(link => {
+        link.addEventListener("click", () => {
+            if (window.innerWidth <= 1024) {
+                closeSidebar();
+            }
+        });
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 1024) {
+            closeSidebar();
+        }
+        if (MAIN_GRAPH) {
+            MAIN_GRAPH.fit();
+        }
     });
 }
 

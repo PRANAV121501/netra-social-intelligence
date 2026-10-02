@@ -57,6 +57,30 @@ body {
   z-index: 100;
 }
 
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-blue);
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
 .header-brand {
   display: flex;
   align-items: center;
@@ -936,3 +960,201 @@ body {
 ::-webkit-scrollbar-track { background: var(--bg-app); }
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT SYSTEM (DESKTOP + TABLET + MOBILE)
+   ========================================================================== */
+
+/* Large Tablets & Medium Laptops */
+@media (max-width: 1200px) {
+  .bottom-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets & Small Laptops (Sidebar turns into Drawer) */
+@media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .netra-sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 6px 0 30px rgba(0, 0, 0, 0.7);
+    background: #0b1222;
+  }
+
+  .netra-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 56px 0 0 0;
+    background: rgba(4, 7, 15, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .middle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile Screens (Phones & Small Tablets) */
+@media (max-width: 768px) {
+  body {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .netra-header {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .brand-subtitle,
+  .sih-badge {
+    display: none;
+  }
+
+  .header-search {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 10px;
+  }
+
+  .search-shortcut {
+    display: none;
+  }
+
+  .date-pill {
+    display: none;
+  }
+
+  .live-pill {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  .live-pill span:last-child {
+    display: none;
+  }
+  .live-pill::after {
+    content: "Live";
+  }
+
+  .netra-content {
+    padding: 12px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .constellation-container {
+    height: 290px;
+  }
+
+  .graph-minimap-box {
+    display: none;
+  }
+
+  .graph-legend-overlay {
+    max-height: 105px;
+    overflow-y: auto;
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Full Tab Detailed Views */
+  #tab-view-body > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  #tab-view-body table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* AI Assistant Modal */
+  #ai-briefing-modal > div {
+    width: 95% !important;
+    max-width: none !important;
+    padding: 14px !important;
+  }
+}
+
+/* Extra Small Mobile Devices (<= 480px) */
+@media (max-width: 480px) {
+  .header-brand {
+    gap: 6px;
+  }
+  .brand-text {
+    font-size: 16px;
+  }
+  .brand-logo-img {
+    height: 26px;
+  }
+
+  .header-search {
+    display: none;
+  }
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .kpi-stat-card {
+    padding: 10px 12px;
+  }
+
+  .kpi-big-number {
+    font-size: 18px;
+  }
+
+  .kpi-sparkline-svg {
+    width: 65px;
+    height: 26px;
+  }
+
+  .constellation-container {
+    height: 250px;
+  }
+
+  .sentiment-overview-split {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .full-tab-view {
+    padding: 14px 10px;
+  }
+}
+

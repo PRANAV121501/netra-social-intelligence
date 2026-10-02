@@ -21,6 +21,9 @@
   <!-- ===================== TOP NAVIGATION HEADER ===================== -->
   <header class="netra-header">
     <div class="header-brand">
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" title="Open Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
       <img src="{{ url_for('static', filename='img/netra_logo.png') }}" alt="NETRA Logo" class="brand-logo-img">
       <div class="brand-text">NETRA</div>
       <div class="brand-subtitle">Social Intelligence Platform</div>
@@ -58,9 +61,10 @@
 
   <!-- ===================== MAIN LAYOUT ===================== -->
   <div class="layout-container">
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
     
     <!-- LEFT SIDEBAR -->
-    <aside class="netra-sidebar">
+    <aside id="netra-sidebar" class="netra-sidebar">
       <div class="sidebar-nav-list">
         <div class="nav-link active" data-tab="tab-dashboard">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
