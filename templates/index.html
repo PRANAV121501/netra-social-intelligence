@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Chart.js for Timeline Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- NETRA Dashboard Theme -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=3.1.0">
 </head>
@@ -133,6 +136,18 @@
           Cross-Platform
         </div>
 
+        <div class="nav-link" data-tab="tab-demographics">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Demographics
+          <span class="nav-link-badge nav-badge-new">NEW</span>
+        </div>
+
+        <div class="nav-link" data-tab="tab-timeline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Sentiment Timeline
+          <span class="nav-link-badge nav-badge-new">NEW</span>
+        </div>
+
         <div class="nav-link" data-tab="tab-predictive">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           Predictive Insights
@@ -141,6 +156,12 @@
         <div class="nav-link" data-tab="tab-reports">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           Reports
+        </div>
+
+        <div class="nav-link" data-tab="tab-datasources">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          Data Sources
+          <span class="nav-link-badge nav-badge-new">NEW</span>
         </div>
       </div>
 
@@ -728,6 +749,168 @@
           <button class="control-btn active" onclick="switchTab('tab-dashboard')">← Back to Dashboard</button>
         </div>
         <div id="tab-view-body"></div>
+      </div>
+
+      <!-- ===================== DEMOGRAPHICS TAB ===================== -->
+      <div id="tab-demographics" class="tab-panel" style="display:none; padding:24px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Audience Demographics Intelligence</h2>
+          <span style="font-size:10px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px; font-weight:700;">AI INFERRED</span>
+        </div>
+        <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Anonymized audience profiling inferred from vocabulary, behavioral patterns, engagement signals, and geo indicators.</p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+          <!-- Age Distribution -->
+          <div class="intel-card">
+            <div class="card-header-label">Age Bracket Distribution</div>
+            <div id="demo-age-chart" style="margin-top:12px;"></div>
+          </div>
+          <!-- Language Distribution -->
+          <div class="intel-card">
+            <div class="card-header-label">Language Distribution</div>
+            <div id="demo-lang-chart" style="margin-top:12px;"></div>
+          </div>
+          <!-- Persona Distribution -->
+          <div class="intel-card">
+            <div class="card-header-label">Audience Persona Breakdown</div>
+            <div id="demo-persona-chart" style="margin-top:12px;"></div>
+          </div>
+          <!-- Professional Interests -->
+          <div class="intel-card" style="grid-column: 1 / -1;">
+            <div class="card-header-label">Professional Interest Clusters</div>
+            <div id="demo-interests-chart" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;"></div>
+          </div>
+          <!-- Sentiment by Age -->
+          <div class="intel-card" style="grid-column: 1 / -1;">
+            <div class="card-header-label">Sentiment Score by Age Bracket</div>
+            <div id="demo-sentiment-age" style="margin-top:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== SENTIMENT TIMELINE TAB ===================== -->
+      <div id="tab-timeline" class="tab-panel" style="display:none; padding:24px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Sentiment Timeline & Emotional Trajectory</h2>
+        </div>
+        <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Chronological sentiment trajectory showing how public emotion evolves over time across all monitored platforms.</p>
+
+        <div style="display:grid; gap:16px;">
+          <!-- Main Timeline Chart -->
+          <div class="intel-card">
+            <div class="card-header-label">Sentiment Score Over Time</div>
+            <canvas id="sentiment-timeline-chart" style="width:100%; height:260px; margin-top:12px;"></canvas>
+          </div>
+          <!-- Emotion Breakdown Over Time -->
+          <div class="intel-card">
+            <div class="card-header-label">Dominant Emotion by Date</div>
+            <div id="emotion-timeline-list" style="margin-top:12px;"></div>
+          </div>
+          <!-- Supportive vs Against -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="intel-card">
+              <div class="card-header-label">Sarcasm Detection Rate</div>
+              <div id="sarcasm-stats" style="margin-top:12px;"></div>
+            </div>
+            <div class="intel-card">
+              <div class="card-header-label">Supportive vs Against Stance</div>
+              <div id="stance-stats" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== DATA SOURCES TAB ===================== -->
+      <div id="tab-datasources" class="tab-panel" style="display:none; padding:24px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          <h2 style="font-size:18px; font-weight:700; color:#fff; margin:0;">Platform Data Source Connectors</h2>
+        </div>
+        <p style="color:#64748b; font-size:12px; margin-bottom:20px;">Configure live API connections for real-time data ingestion. Without keys, NETRA runs on sample intelligence data.</p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+
+          <!-- Twitter/X Connector -->
+          <div class="intel-card">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:22px;">𝕏</span>
+              <div>
+                <div style="font-weight:700; color:#fff; font-size:14px;">Twitter / X</div>
+                <div id="tw-status-badge" style="font-size:10px; color:#64748b;">● Disconnected (Sample Mode)</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input id="tw-bearer-token" type="password" placeholder="Bearer Token (from developer.twitter.com)"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <input id="tw-query" type="text" placeholder="Search query (e.g. #India #CyberSecurity)" value="#India"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <div style="display:flex; gap:8px; margin-top:4px;">
+                <button onclick="configureConnector('twitter')" style="flex:1; background:#1e293b; border:1px solid #334155; color:#38bdf8; padding:8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:600;">Test Connection</button>
+                <button onclick="fetchFromConnector('twitter')" style="flex:1; background:#0284c7; border:none; color:#fff; padding:8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:600;">Fetch & Analyze</button>
+              </div>
+              <div id="tw-result" style="font-size:11px; color:#64748b; min-height:16px;"></div>
+            </div>
+          </div>
+
+          <!-- Telegram Connector -->
+          <div class="intel-card">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:22px;">✈</span>
+              <div>
+                <div style="font-weight:700; color:#fff; font-size:14px;">Telegram</div>
+                <div id="tg-status-badge" style="font-size:10px; color:#64748b;">● Disconnected (Sample Mode)</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input id="tg-api-id" type="text" placeholder="API ID (from my.telegram.org)"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <input id="tg-api-hash" type="password" placeholder="API Hash"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <input id="tg-phone" type="text" placeholder="Phone number (+91...)"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <input id="tg-channel" type="text" placeholder="Channel (e.g. @india_news)" value="@india_news"
+                style="background:#0f172a; border:1px solid #334155; color:#f1f5f9; padding:8px 10px; border-radius:6px; font-size:12px; width:100%; box-sizing:border-box;">
+              <div style="display:flex; gap:8px; margin-top:4px;">
+                <button onclick="configureConnector('telegram')" style="flex:1; background:#1e293b; border:1px solid #334155; color:#38bdf8; padding:8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:600;">Test Connection</button>
+                <button onclick="fetchFromConnector('telegram')" style="flex:1; background:#0284c7; border:none; color:#fff; padding:8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:600;">Fetch & Analyze</button>
+              </div>
+              <div id="tg-result" style="font-size:11px; color:#64748b; min-height:16px;"></div>
+            </div>
+          </div>
+
+          <!-- Instagram (Coming Soon) -->
+          <div class="intel-card" style="opacity:0.55;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:22px;">📷</span>
+              <div>
+                <div style="font-weight:700; color:#fff; font-size:14px;">Instagram</div>
+                <div style="font-size:10px; color:#64748b;">● Meta Graph API — Coming Soon</div>
+              </div>
+            </div>
+            <div style="font-size:11px; color:#475569; line-height:1.6;">Requires Meta Developer App approval. Instagram Graph API v18+ supports hashtag search and business account insights.</div>
+          </div>
+
+          <!-- Reddit (Coming Soon) -->
+          <div class="intel-card" style="opacity:0.55;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:22px;">🔴</span>
+              <div>
+                <div style="font-weight:700; color:#fff; font-size:14px;">Reddit / YouTube</div>
+                <div style="font-size:10px; color:#64748b;">● PRAW + YouTube Data API — Coming Soon</div>
+              </div>
+            </div>
+            <div style="font-size:11px; color:#475569; line-height:1.6;">PRAW connector for subreddit monitoring and YouTube Data API v3 for comment thread extraction from public videos.</div>
+          </div>
+
+        </div>
+
+        <!-- Connection Summary -->
+        <div class="intel-card" style="margin-top:16px;">
+          <div class="card-header-label">Connector Status Summary</div>
+          <div id="connector-summary" style="margin-top:12px; font-size:12px; color:#94a3b8;">Loading connector status...</div>
+        </div>
       </div>
 
     </main>

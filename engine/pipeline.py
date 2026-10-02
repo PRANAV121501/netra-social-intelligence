@@ -21,6 +21,7 @@ from engine.predictive_engine import PredictiveEngine
 from engine.ai_assistant import AIAssistant
 from engine.factcheck_engine import FactCheckRadar
 from engine.geo_engine import GeoIntelligenceEngine
+from engine.demographics_engine import DemographicsEngine
 
 class IntelligencePipeline:
     def __init__(self):
@@ -35,6 +36,7 @@ class IntelligencePipeline:
         self.ai_assistant = AIAssistant()
         self.factcheck_radar = FactCheckRadar()
         self.geo_engine = GeoIntelligenceEngine()
+        self.demographics_engine = DemographicsEngine()
 
     def run(self, raw_posts: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -93,6 +95,12 @@ class IntelligencePipeline:
 
         # Stage 12: Cross-Platform Narrative Migration Hopping
         cross_platform = self.propagation_engine.analyze_cross_platform_hopping(processed_posts)
+
+        # Stage 13: Demographic Intelligence Profiling
+        demographics = self.demographics_engine.aggregate_demographics(processed_posts)
+
+        # Stage 14: Sentiment Timeline (chronological sentiment trajectory)
+        sentiment_timeline = self.sentiment_engine.build_sentiment_timeline(processed_posts)
 
         # Global KPIs & Entity Rollups
         all_hashtags = []
@@ -159,7 +167,9 @@ class IntelligencePipeline:
             "geo_points": geo_points,
             "geo_intel": geo_intel,
             "fact_checks": fact_checks,
-            "cross_platform": cross_platform
+            "cross_platform": cross_platform,
+            "demographics": demographics,
+            "sentiment_timeline": sentiment_timeline
         }
 
         # Cache internal graph for path finder queries

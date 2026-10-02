@@ -382,6 +382,14 @@ body {
   border-radius: 10px;
 }
 
+.nav-badge-new {
+  background: var(--accent-cyan);
+  color: #030712;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
 .sidebar-sources-box {
   border-top: 1px solid var(--border-card);
   padding-top: 14px;

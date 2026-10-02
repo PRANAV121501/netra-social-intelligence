@@ -257,6 +257,94 @@ def print_dossier():
     return render_template("dossier_print.html", state=state, now=datetime.utcnow().strftime("%d %b %Y %H:%M UTC"))
 
 
+# ---------------------------------------------------------------------------
+# Data Source Connector Routes
+# ---------------------------------------------------------------------------
+
+# Store active connector credentials in session/memory (demo mode)
+_connector_keys = {}
+
+@app.route("/api/connectors/status", methods=["GET"])
+def connectors_status():
+    """Returns status of all configured platform connectors."""
+    from engine.connectors.twitter_connector import TwitterConnector
+    from engine.connectors.telegram_connector import TelegramConnector
+
+    tw = TwitterConnector(bearer_token=_connector_keys.get("twitter_bearer_token"))
+    tg = TelegramConnector(
+        api_id=_connector_keys.get("telegram_api_id"),
+        api_hash=_connector_keys.get("telegram_api_hash"),
+        phone=_connector_keys.get("telegram_phone")
+    )
+    return jsonify({
+        "connectors": [tw.get_status(), tg.get_status()],
+        "total_configured": sum(1 for c in [tw, tg] if c.connected)
+    })
+
+@app.route("/api/connectors/configure", methods=["POST"])
+def configure_connector():
+    """Saves connector API credentials and tests connection."""
+    global _connector_keys
+    from engine.connectors.twitter_connector import TwitterConnector
+    from engine.connectors.telegram_connector import TelegramConnector
+
+    data = request.get_json() or {}
+    platform = data.get("platform", "").lower()
+
+    if platform == "twitter":
+        _connector_keys["twitter_bearer_token"] = data.get("bearer_token", "")
+        connector = TwitterConnector(bearer_token=_connector_keys.get("twitter_bearer_token"))
+        return jsonify({"platform": "twitter", "test": connector.test_connection()})
+
+    elif platform == "telegram":
+        _connector_keys["telegram_api_id"] = data.get("api_id", "")
+        _connector_keys["telegram_api_hash"] = data.get("api_hash", "")
+        _connector_keys["telegram_phone"] = data.get("phone", "")
+        connector = TelegramConnector(
+            api_id=_connector_keys.get("telegram_api_id"),
+            api_hash=_connector_keys.get("telegram_api_hash"),
+            phone=_connector_keys.get("telegram_phone")
+        )
+        return jsonify({"platform": "telegram", "test": connector.test_connection()})
+
+    return jsonify({"error": "Unknown platform"}), 400
+
+@app.route("/api/connectors/fetch", methods=["POST"])
+def fetch_from_connector():
+    """Fetches live posts from a configured connector and re-runs pipeline."""
+    global CURRENT_PIPELINE_RESULTS
+    _ensure_initialized()
+    from engine.connectors.twitter_connector import TwitterConnector
+    from engine.connectors.telegram_connector import TelegramConnector
+
+    data = request.get_json() or {}
+    platform = data.get("platform", "twitter").lower()
+    query = data.get("query", "#India")
+
+    if platform == "twitter":
+        connector = TwitterConnector(bearer_token=_connector_keys.get("twitter_bearer_token"))
+        new_posts = connector.fetch_posts(query=query, limit=50)
+    elif platform == "telegram":
+        connector = TelegramConnector(
+            api_id=_connector_keys.get("telegram_api_id"),
+            api_hash=_connector_keys.get("telegram_api_hash"),
+            phone=_connector_keys.get("telegram_phone")
+        )
+        new_posts = connector.fetch_posts(channel=query, limit=50)
+    else:
+        return jsonify({"error": "Unknown platform"}), 400
+
+    merged = list(INITIAL_POSTS) + new_posts
+    CURRENT_PIPELINE_RESULTS = pipeline.run(merged)
+    return jsonify({
+        "status": "success",
+        "platform": platform,
+        "fetched": len(new_posts),
+        "total_posts": len(merged),
+        "mode": "live" if connector.connected else "sample_fallback"
+    })
+
+
 if __name__ == "__main__":
     print("=" * 60)
     print("  NETRA — AI-Powered Social Intelligence Platform (SIH26152)")

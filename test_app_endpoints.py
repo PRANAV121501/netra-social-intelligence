@@ -67,7 +67,21 @@ def test_endpoints():
     assert up_data.get("status") == "success"
     print(f"POST /api/pipeline/upload -> 200 OK (Imported: {up_data['imported_count']} posts)")
 
+    # 9. Connectors API (SIH Component A)
+    res = client.get("/api/connectors/status")
+    assert res.status_code == 200
+    conn_data = res.get_json()
+    assert "connectors" in conn_data
+    print("GET /api/connectors/status -> 200 OK")
+
+    res = client.post("/api/connectors/fetch", json={"platform": "twitter"})
+    assert res.status_code == 200
+    fetch_data = res.get_json()
+    assert fetch_data.get("status") == "success"
+    print(f"POST /api/connectors/fetch (Twitter) -> 200 OK (Fetched: {fetch_data['fetched']} posts)")
+
     print("\nALL FLASK ENDPOINTS VERIFIED & WORKING FLAWLESSLY!")
 
 if __name__ == "__main__":
     test_endpoints()
+
