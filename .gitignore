@@ -12,3 +12,5 @@ build/
 .DS_Store
 Thumbs.db
 netra_desktop_dist/
+netra_build_temp/
+*.spec
