@@ -168,6 +168,77 @@ body {
   gap: 14px;
 }
 
+.action-pill-btn {
+  background: #111a2d;
+  border: 1px solid #1e2c45;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.action-pill-btn:hover {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: var(--accent-blue);
+  color: #38bdf8;
+}
+
+.upload-pill {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+.upload-pill:hover {
+  background: rgba(56, 189, 248, 0.25);
+  color: #ffffff;
+}
+
+.dossier-pill {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+.dossier-pill:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
+.ai-voice-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  margin-right: 4px;
+}
+.ai-voice-btn:hover {
+  color: var(--accent-blue-light);
+  background: rgba(56, 189, 248, 0.15);
+}
+.ai-voice-btn.listening {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
 .date-pill {
   background: #111a2d;
   border: 1px solid #1e2c45;

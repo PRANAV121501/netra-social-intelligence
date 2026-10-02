@@ -19,6 +19,8 @@ from engine.propagation_engine import PropagationEngine
 from engine.bot_detection import BotDetector
 from engine.predictive_engine import PredictiveEngine
 from engine.ai_assistant import AIAssistant
+from engine.factcheck_engine import FactCheckRadar
+from engine.geo_engine import GeoIntelligenceEngine
 
 class IntelligencePipeline:
     def __init__(self):
@@ -31,6 +33,8 @@ class IntelligencePipeline:
         self.bot_detector = BotDetector()
         self.predictive_engine = PredictiveEngine()
         self.ai_assistant = AIAssistant()
+        self.factcheck_radar = FactCheckRadar()
+        self.geo_engine = GeoIntelligenceEngine()
 
     def run(self, raw_posts: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
@@ -80,6 +84,15 @@ class IntelligencePipeline:
             communities=graph_data["communities"], 
             narratives=narratives
         )
+
+        # Stage 10: Fact-Check & Misinformation Debunking Radar
+        fact_checks = self.factcheck_radar.analyze_claims(processed_posts, narratives)
+
+        # Stage 11: Geospatial Regional Threat Intel (India Hotspots)
+        geo_intel = self.geo_engine.aggregate_geo_intel(processed_posts, topic_sentiment)
+
+        # Stage 12: Cross-Platform Narrative Migration Hopping
+        cross_platform = self.propagation_engine.analyze_cross_platform_hopping(processed_posts)
 
         # Global KPIs & Entity Rollups
         all_hashtags = []
@@ -143,7 +156,10 @@ class IntelligencePipeline:
                 "top_organizations": top_orgs,
                 "top_locations": top_locations
             },
-            "geo_points": geo_points
+            "geo_points": geo_points,
+            "geo_intel": geo_intel,
+            "fact_checks": fact_checks,
+            "cross_platform": cross_platform
         }
 
         # Cache internal graph for path finder queries

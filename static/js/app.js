@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadBackendState();
     initAIAssistant();
     initLiveToggle();
+    initVoiceSearch();
+    initDataUpload();
 });
 
 // ===================== NAVIGATION TABS =====================
@@ -224,6 +226,133 @@ function renderDetailedTab(tabId, titleEl, bodyEl) {
                 });
             }
         }, 100);
+    } else if (tabId === "tab-geo") {
+        titleEl.innerText = "Geospatial Threat Intelligence (India Map)";
+        bodyEl.innerHTML = `
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px;">
+                <div>
+                    <div style="font-size:12px; color:#94a3b8; margin-bottom:10px;">Regional narrative velocity, coordinated bot clusters, and threat hotspot density across India.</div>
+                    <div id="india-leaflet-map" style="height:480px; width:100%; border-radius:8px; border:1px solid #1e293b;"></div>
+                </div>
+                <div style="background:#111a2d; border:1px solid #1e293b; border-radius:8px; padding:14px; max-height:510px; overflow-y:auto;">
+                    <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:10px; border-bottom:1px solid #1e293b; padding-bottom:6px;">Regional Threat Density</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        ${(PIPELINE_DATA.geo_intel || []).map(g => `
+                            <div style="background:#0f172a; border:1px solid #1e293b; border-radius:6px; padding:10px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <b style="color:#fff; font-size:12.5px;">${g.city}</b>
+                                    <span style="font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:3px; background:${g.threat_level === 'CRITICAL' ? '#ef4444' : (g.threat_level === 'HIGH' ? '#f59e0b' : '#10b981')}; color:#fff;">${g.threat_level}</span>
+                                </div>
+                                <div style="font-size:11px; color:#94a3b8; margin-top:3px;">${g.state} (${g.region})</div>
+                                <div style="font-size:10.5px; color:#38bdf8; margin-top:4px;">Volume: ${g.volume} posts | Engagement: ${g.total_engagement.toLocaleString()}</div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            </div>
+        `;
+        setTimeout(() => {
+            const mapContainer = document.getElementById("india-leaflet-map");
+            if (mapContainer && typeof L !== "undefined") {
+                const map = L.map("india-leaflet-map").setView([22.5937, 78.9629], 5);
+                L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+                    attribution: '&copy; CartoDB &copy; OpenStreetMap',
+                    maxZoom: 18
+                }).addTo(map);
+
+                (PIPELINE_DATA.geo_intel || []).forEach(g => {
+                    const color = g.threat_level === "CRITICAL" ? "#ef4444" : (g.threat_level === "HIGH" ? "#f59e0b" : "#10b981");
+                    const circle = L.circleMarker([g.lat, g.lon], {
+                        radius: Math.max(8, Math.min(22, g.volume * 3)),
+                        fillColor: color,
+                        color: "#ffffff",
+                        weight: 1.5,
+                        opacity: 0.9,
+                        fillOpacity: 0.7
+                    }).addTo(map);
+
+                    circle.bindPopup(`
+                        <b style="color:#fff; font-size:13px;">${g.city}, ${g.state}</b><br>
+                        <span style="color:${color}; font-weight:700;">Threat Level: ${g.threat_level} (${g.threat_score}/100)</span><br>
+                        <span style="color:#94a3b8; font-size:11px;">Analyzed Posts: ${g.volume}</span><br>
+                        <span style="color:#38bdf8; font-size:11px;">Bot Activity: ${g.bot_activity_flag ? '⚠️ DETECTED' : 'Clean'}</span>
+                    `);
+                });
+            }
+        }, 150);
+    } else if (tabId === "tab-factcheck") {
+        titleEl.innerText = "Fact-Check & Misinformation Debunking Radar";
+        bodyEl.innerHTML = `
+            <div style="font-size:12px; color:#94a3b8; margin-bottom:14px;">
+                Continuous cross-referencing of viral narratives against official Indian truth registries (PIB Fact Check, CERT-In, SEBI, NCIIPC).
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                ${(PIPELINE_DATA.fact_checks || []).map(fc => `
+                    <div style="background:#111a2d; border:1px solid #1e293b; border-left:4px solid ${fc.manipulation_index > 75 ? '#ef4444' : '#f59e0b'}; border-radius:6px; padding:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <span style="font-size:10px; font-weight:700; background:#1e293b; color:#38bdf8; padding:2px 7px; border-radius:3px; margin-right:8px;">${fc.topic}</span>
+                                <b style="color:#fff; font-size:13.5px;">${fc.verdict}</b>
+                            </div>
+                            <span style="font-size:10px; font-weight:800; background:${fc.official_status === 'DEBUNKED' ? '#ef4444' : '#f97316'}; color:#fff; padding:3px 8px; border-radius:3px;">
+                                ${fc.official_status}
+                            </span>
+                        </div>
+                        <div style="font-size:11.5px; color:#fca5a5; margin-bottom:8px; font-style:italic;">
+                            Claim: "${fc.claim_sample}"
+                        </div>
+                        <div style="background:#090d18; border:1px solid #1e293b; border-radius:6px; padding:10px 12px; margin-bottom:10px;">
+                            <div style="font-size:11px; font-weight:700; color:#10b981; margin-bottom:2px;">VERIFIED GROUND TRUTH:</div>
+                            <div style="font-size:12px; color:#e2e8f0; line-height:1.45;">${fc.fact}</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#94a3b8;">
+                            <div>Official Registry: <b style="color:#cbd5e1;">${fc.registry_source}</b></div>
+                            <div style="display:flex; gap:14px;">
+                                <span>Credibility: <b style="color:#f87171;">${fc.credibility_score}%</b></span>
+                                <span>Manipulation Index: <b style="color:#ef4444;">${fc.manipulation_index}%</b></span>
+                            </div>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (tabId === "tab-hopping") {
+        titleEl.innerText = "Cross-Platform Narrative Migration Hopping";
+        bodyEl.innerHTML = `
+            <div style="font-size:12px; color:#94a3b8; margin-bottom:14px;">
+                Traces multi-platform narrative migration sequences across DarkWeb/Telegram, Reddit, Twitter/X, and News Portals.
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                ${(PIPELINE_DATA.cross_platform || []).map(cp => `
+                    <div style="background:#111a2d; border:1px solid #1e293b; border-radius:8px; padding:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div>
+                                <b style="color:#fff; font-size:14px;">${cp.narrative}</b>
+                                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Origin: ${cp.origin_platform} &bull; Reach: <b style="color:#38bdf8;">${cp.cross_platform_reach}</b></div>
+                            </div>
+                            <span style="font-size:10.5px; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid #0284c7; padding:3px 9px; border-radius:4px; font-weight:600;">
+                                ${cp.speed_multiplier}
+                            </span>
+                        </div>
+                        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px;">
+                            ${cp.stages.map((st, idx) => `
+                                <div style="background:#090d18; border:1px solid ${st.status.includes('ACTIVE') ? '#0284c7' : '#1e293b'}; border-radius:6px; padding:10px;">
+                                    <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-bottom:4px;">
+                                        <span>Hop ${idx + 1}</span>
+                                        <span style="color:#cbd5e1; font-family:var(--font-mono);">${st.time_offset}</span>
+                                    </div>
+                                    <div style="font-weight:700; color:#fff; font-size:12px; margin-bottom:4px;">${st.icon} ${st.platform}</div>
+                                    <div style="font-size:10.5px; color:#94a3b8; margin-bottom:6px;">${st.role}</div>
+                                    <span style="font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; background:${st.status === 'COMPLETED' ? '#1e293b' : (st.status.includes('ACTIVE') ? '#0284c7' : '#334155')}; color:#fff;">
+                                        ${st.status}
+                                    </span>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
     }
 }
 
@@ -452,7 +581,7 @@ function initAIAssistant() {
     }
 }
 
-async function askAI(promptText) {
+async function askAI(promptText, speak = false) {
     const modal = document.getElementById("ai-briefing-modal");
     const body = document.getElementById("ai-modal-response-body");
     if (!modal || !body) return;
@@ -492,7 +621,217 @@ async function askAI(promptText) {
                 </div>
             ` : ''}
         `;
+
+        if (speak && data.executive_briefing) {
+            speakBriefing(data.executive_briefing);
+        }
     } catch (e) {
         body.innerHTML = `<span style="color:#ef4444;">Error retrieving tactical intelligence briefing.</span>`;
+    }
+}
+
+// ===================== VOICE SEARCH & SPEECH SYNTHESIS =====================
+function initVoiceSearch() {
+    const voiceBtn = document.getElementById("ai-voice-btn");
+    const input = document.getElementById("ai-quick-input");
+    if (!voiceBtn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        voiceBtn.title = "Voice recognition not supported in this browser (use Chrome/Edge)";
+        voiceBtn.style.opacity = "0.5";
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-IN";
+
+    let isListening = false;
+
+    voiceBtn.addEventListener("click", () => {
+        if (isListening) {
+            recognition.stop();
+            return;
+        }
+        try {
+            recognition.start();
+            isListening = true;
+            voiceBtn.classList.add("listening");
+            input.placeholder = "Listening... Speak your query";
+        } catch (e) {
+            console.error("Speech recognition error:", e);
+        }
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        input.value = transcript;
+        voiceBtn.classList.remove("listening");
+        input.placeholder = "Type or speak question...";
+        isListening = false;
+        askAI(transcript, true);
+    };
+
+    recognition.onerror = () => {
+        voiceBtn.classList.remove("listening");
+        input.placeholder = "Type or speak question...";
+        isListening = false;
+    };
+
+    recognition.onend = () => {
+        voiceBtn.classList.remove("listening");
+        input.placeholder = "Type or speak question...";
+        isListening = false;
+    };
+}
+
+function speakBriefing(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const cleanText = text.replace(/\[.*?\]/g, '').replace(/https?:\/\/\S+/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText.substring(0, 180));
+    utterance.rate = 1.05;
+    utterance.pitch = 0.95;
+    window.speechSynthesis.speak(utterance);
+}
+
+// ===================== CUSTOM DATASET INGESTION =====================
+function initDataUpload() {
+    const openBtn = document.getElementById("btn-open-upload");
+    const closeBtn = document.getElementById("btn-close-upload");
+    const modal = document.getElementById("upload-modal");
+    const dropZone = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
+    const submitBtn = document.getElementById("btn-submit-upload");
+    const statusDiv = document.getElementById("upload-status");
+    const templateBtn = document.getElementById("download-template-btn");
+
+    if (!modal) return;
+
+    if (openBtn) {
+        openBtn.addEventListener("click", () => {
+            modal.style.display = "flex";
+            if (statusDiv) statusDiv.style.display = "none";
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.style.display = "none";
+    });
+
+    if (dropZone && fileInput) {
+        dropZone.addEventListener("click", () => fileInput.click());
+
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = "#0284c7";
+            dropZone.style.background = "rgba(2,132,199,0.1)";
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.style.borderColor = "#334155";
+            dropZone.style.background = "#111a2d";
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = "#334155";
+            dropZone.style.background = "#111a2d";
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showSelectedFile(fileInput.files[0].name);
+            }
+        });
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length) {
+                showSelectedFile(fileInput.files[0].name);
+            }
+        });
+    }
+
+    function showSelectedFile(name) {
+        if (!statusDiv) return;
+        statusDiv.style.display = "block";
+        statusDiv.style.background = "rgba(56,189,248,0.12)";
+        statusDiv.style.border = "1px solid #0284c7";
+        statusDiv.style.color = "#38bdf8";
+        statusDiv.innerText = `Selected: ${name} — Click 'Run Intelligence Analysis' to begin.`;
+    }
+
+    if (submitBtn) {
+        submitBtn.addEventListener("click", async () => {
+            if (!fileInput.files || !fileInput.files.length) {
+                alert("Please select a CSV or JSON dataset to ingest.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            submitBtn.innerText = "Processing 10-Stage Pipeline...";
+            submitBtn.disabled = true;
+
+            try {
+                const resp = await fetch("/api/pipeline/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await resp.json();
+
+                if (result.status === "success") {
+                    PIPELINE_DATA = result.results;
+                    updateDashboardWithBackendData();
+                    statusDiv.style.background = "rgba(16,185,129,0.15)";
+                    statusDiv.style.border = "1px solid #10b981";
+                    statusDiv.style.color = "#10b981";
+                    statusDiv.innerText = `Success! Ingested ${result.imported_count} posts. All graphs and intelligence metrics updated.`;
+
+                    setTimeout(() => {
+                        modal.style.display = "none";
+                        submitBtn.innerText = "Run Intelligence Analysis";
+                        submitBtn.disabled = false;
+                        switchTab("tab-dashboard");
+                    }, 1400);
+                } else {
+                    statusDiv.style.background = "rgba(239,68,68,0.15)";
+                    statusDiv.style.border = "1px solid #ef4444";
+                    statusDiv.style.color = "#ef4444";
+                    statusDiv.innerText = `Upload Error: ${result.message}`;
+                    submitBtn.innerText = "Run Intelligence Analysis";
+                    submitBtn.disabled = false;
+                }
+            } catch (err) {
+                alert("Failed to upload dataset: " + err.message);
+                submitBtn.innerText = "Run Intelligence Analysis";
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    if (templateBtn) {
+        templateBtn.addEventListener("click", () => {
+            const csvContent = "data:text/csv;charset=utf-8,author,content,likes,retweets,followers,location,platform\n" +
+                "TechObserver_IN,Critical breakthrough achieved by national AI labs in sovereign foundational models. #IndiaAI,840,210,45000,New Delhi,Twitter\n" +
+                "CyberDefense_Cell,Advisory: High-frequency scanning intercepted on telecommunications switches. Countermeasures active. #NationalSecurity,1250,560,98000,Bengaluru,Twitter\n" +
+                "MarketWatcher,Heavy trading volumes witnessed across technology and defense equities today. #StockRally,430,95,31000,Mumbai,Twitter\n" +
+                "bot_swarm_delta_01,URGENT: Grid collapse imminent across northern sector power corridor. Retweet fast! #GridFailure,120,410,12,New Delhi,Twitter\n";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "NETRA_sample_stream_template.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
     }
 }

@@ -44,12 +44,28 @@ def test_endpoints():
     assert sim_data.get("status") == "simulated"
     print("POST /api/pipeline/simulate -> 200 OK")
 
-    # 6. Dossier Export
+    # 6. Dossier Export (JSON)
     res = client.get("/api/export/dossier")
     assert res.status_code == 200
     dossier = res.get_json()
     assert "classification" in dossier
     print("GET /api/export/dossier -> 200 OK")
+
+    # 7. Dossier Print (HTML)
+    res = client.get("/dossier/print")
+    assert res.status_code == 200
+    assert b"NETRA TACTICAL INTELLIGENCE BRIEFING" in res.data
+    print("GET /dossier/print -> 200 OK (Classified Dossier View)")
+
+    # 8. Upload Dataset API
+    sample_csv = "author,content,likes,retweets,followers,location\nTestNode,Critical radar test for intelligence upload #CyberSecurity,100,20,5000,New Delhi\n"
+    import io
+    data = {'file': (io.BytesIO(sample_csv.encode('utf-8')), 'test_stream.csv')}
+    res = client.post("/api/pipeline/upload", data=data, content_type='multipart/form-data')
+    assert res.status_code == 200
+    up_data = res.get_json()
+    assert up_data.get("status") == "success"
+    print(f"POST /api/pipeline/upload -> 200 OK (Imported: {up_data['imported_count']} posts)")
 
     print("\nALL FLASK ENDPOINTS VERIFIED & WORKING FLAWLESSLY!")
 

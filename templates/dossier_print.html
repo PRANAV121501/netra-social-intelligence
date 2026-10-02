@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NETRA — Classified Tactical Intelligence Dossier (SIH26152)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+      padding: 30px;
+    }
+
+    .classification-banner {
+      background: #dc2626;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      text-align: center;
+      padding: 6px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .dossier-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .seal-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .seal-img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+    }
+
+    .doc-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #0f172a;
+    }
+
+    .doc-sub {
+      font-size: 11px;
+      color: #475569;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+    }
+
+    .meta-box {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #334155;
+    }
+
+    .meta-box b { color: #dc2626; }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-box {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0284c7;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .kpi-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-left: 4px solid #0284c7;
+      padding-left: 8px;
+      margin: 24px 0 12px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      margin-bottom: 20px;
+    }
+
+    th {
+      background: #f1f5f9;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 700;
+      color: #334155;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+
+    .badge-pill {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .badge-critical { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; }
+    .badge-debunked { background: #fee2e2; color: #b91c1c; font-weight: 800; }
+    .badge-active   { background: #dbeafe; color: #0284c7; }
+
+    .print-actions {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .btn-action {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2,132,199,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-action:hover { background: #0369a1; }
+
+    .btn-back {
+      background: #334155;
+    }
+    .btn-back:hover { background: #1e293b; }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .dossier-card { border: none; box-shadow: none; padding: 20px; max-width: 100%; }
+      .print-actions { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-actions">
+    <button class="btn-action btn-back" onclick="window.close()">← Close</button>
+    <button class="btn-action" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+
+  <div class="dossier-card">
+    <div class="classification-banner">RESTRICTED // LAW ENFORCEMENT & NATIONAL CYBER COMMAND</div>
+
+    <div class="header-row">
+      <div class="seal-box">
+        <img src="/static/img/netra_logo.png" alt="NETRA Emblem" class="seal-img">
+        <div>
+          <div class="doc-title">NETRA TACTICAL INTELLIGENCE BRIEFING</div>
+          <div class="doc-sub">COGNITIVE DEFENSE & SOCIAL NETWORK FORENSICS // SIH26152</div>
+        </div>
+      </div>
+      <div class="meta-box">
+        <div>DOSSIER: <b>#DOS-2026-0928</b></div>
+        <div>TIMESTAMP: {{ now }}</div>
+        <div>CLEARANCE: <b>LEVEL-4 (DIRECTORATE)</b></div>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi-box">
+        <div class="kpi-val">{{ state.summary_kpis.total_posts }}</div>
+        <div class="kpi-lbl">Total Posts Analyzed</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val">{{ state.summary_kpis.critical_threat_alerts }}</div>
+        <div class="kpi-lbl">Critical Threat Alerts</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val">{{ state.summary_kpis.bot_accounts_quarantined }}</div>
+        <div class="kpi-lbl">Bots Quarantined</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val">{{ state.summary_kpis.active_communities }}</div>
+        <div class="kpi-lbl">Detected Communities</div>
+      </div>
+    </div>
+
+    <!-- Active Threat Alerts -->
+    <div class="section-title">1. Critical Threat &amp; CIB Alerts</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Severity</th><th>Threat Indicator</th><th>Target Topic</th><th>Recommended Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in state.alerts %}
+        <tr>
+          <td><span class="badge-pill badge-critical">{{ a.severity }}</span></td>
+          <td><b>{{ a.title }}</b><br><small style="color:#64748b;">{{ a.pattern }}</small></td>
+          <td>{{ a.target_topic }}</td>
+          <td style="color:#0284c7;">{{ a.recommended_action }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Fact Check Radar -->
+    <div class="section-title">2. Misinformation Debunking Radar</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th><th>Official Status</th><th>Manip. Index</th><th>Verified Ground Truth</th><th>Source Registry</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fc in state.fact_checks %}
+        <tr>
+          <td><b>{{ fc.topic }}</b></td>
+          <td><span class="badge-pill badge-debunked">{{ fc.official_status }}</span></td>
+          <td><b>{{ fc.manipulation_index }}%</b></td>
+          <td>{{ fc.fact }}</td>
+          <td><small>{{ fc.registry_source }}</small></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Key Influencers -->
+    <div class="section-title">3. Network Centrality &amp; Key Influencers</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Account</th><th>Influence Score</th><th>PageRank</th><th>Followers</th><th>Impact Classification</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inf in state.influencers[:5] %}
+        <tr>
+          <td><b>@{{ inf.username }}</b></td>
+          <td>{{ inf.influence_score }}/100</td>
+          <td>{{ inf.pagerank }}</td>
+          <td>{{ inf.followers }}</td>
+          <td><span class="badge-pill badge-active">{{ inf.impact_tier }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Sign-off -->
+    <div style="margin-top: 36px; padding-top: 14px; border-top: 1px dashed #cbd5e1; display:flex; justify-content:space-between; font-size:11px; color:#64748b; font-family:'JetBrains Mono', monospace;">
+      <div>PRODUCED BY: NETRA Autonomous Agent Engine</div>
+      <div>CLASSIFICATION: RESTRICTED // COGNITIVE WARFARE LAB</div>
+    </div>
+  </div>
+
+</body>
+</html>

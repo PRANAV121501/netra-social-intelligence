@@ -11,6 +11,8 @@ from flask import Flask, render_template, request, jsonify, session, Response
 import os
 import json
 import time
+import csv
+import io
 from datetime import datetime
 from functools import wraps
 
@@ -146,13 +148,84 @@ def export_dossier():
         "top_trends": state.get("trends", [])[:5],
         "emerging_narratives": state.get("narratives", [])[:5],
         "top_influencers": state.get("influencers", [])[:5],
-        "predictive_forecast": state.get("predictions", [])[:5]
+        "predictive_forecast": state.get("predictions", [])[:5],
+        "fact_checks": state.get("fact_checks", []),
+        "cross_platform_hopping": state.get("cross_platform", [])
     }
     return Response(
         json.dumps(dossier, indent=2),
         mimetype="application/json",
         headers={"Content-Disposition": "attachment;filename=NETRA_Intelligence_Dossier.json"}
     )
+
+@app.route("/api/pipeline/upload", methods=["POST"])
+def upload_dataset():
+    """Ingests custom CSV or JSON dataset from the user and re-runs pipeline."""
+    global CURRENT_PIPELINE_RESULTS
+    parsed_posts = []
+
+    if "file" in request.files:
+        f = request.files["file"]
+        filename = f.filename.lower()
+        content = f.read().decode("utf-8", errors="ignore")
+
+        if filename.endswith(".json"):
+            try:
+                parsed_posts = json.loads(content)
+            except Exception as e:
+                return jsonify({"status": "error", "message": f"Malformed JSON: {str(e)}"}), 400
+        else:
+            # Assume CSV
+            try:
+                reader = csv.DictReader(io.StringIO(content))
+                for i, row in enumerate(reader):
+                    post_text = row.get("content") or row.get("text") or row.get("tweet") or row.get("message") or ""
+                    if not post_text.strip():
+                        continue
+                    author = row.get("author") or row.get("user") or row.get("username") or f"user_{i+1}"
+                    followers = int(row.get("followers") or row.get("follower_count") or 1200)
+                    following = int(row.get("following") or 250)
+                    likes = int(row.get("likes") or row.get("favorites") or 50)
+                    retweets = int(row.get("retweets") or row.get("shares") or 10)
+                    location = row.get("location") or row.get("city") or "New Delhi"
+                    platform = row.get("platform") or "Twitter"
+
+                    parsed_posts.append({
+                        "id": f"upload_post_{i+1}",
+                        "author": author,
+                        "author_name": author,
+                        "content": post_text,
+                        "timestamp": row.get("timestamp") or datetime.utcnow().isoformat() + "Z",
+                        "followers": followers,
+                        "following": following,
+                        "likes": likes,
+                        "retweets": retweets,
+                        "replies": int(row.get("replies") or 5),
+                        "location": location,
+                        "platform": platform
+                    })
+            except Exception as e:
+                return jsonify({"status": "error", "message": f"Failed to parse CSV: {str(e)}"}), 400
+    elif request.is_json:
+        data = request.get_json() or {}
+        parsed_posts = data.get("posts", [])
+    
+    if not parsed_posts:
+        return jsonify({"status": "error", "message": "No valid posts found in uploaded file"}), 400
+
+    CURRENT_PIPELINE_RESULTS = pipeline.run(parsed_posts)
+    return jsonify({
+        "status": "success",
+        "imported_count": len(parsed_posts),
+        "results": CURRENT_PIPELINE_RESULTS
+    })
+
+@app.route("/dossier/print", methods=["GET"])
+def print_dossier():
+    """Renders a classified intelligence dossier formatted for printing or PDF export."""
+    state = CURRENT_PIPELINE_RESULTS
+    return render_template("dossier_print.html", state=state, now=datetime.utcnow().strftime("%d %b %Y %H:%M UTC"))
+
 
 if __name__ == "__main__":
     print("=" * 60)
