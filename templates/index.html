@@ -20,8 +20,8 @@
   <!-- Chart.js for Timeline Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- NETRA Dashboard Theme -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=3.3.0">
+  <!-- NETRA Dashboard Theme — FuseLab Dark Intelligence v4.0 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v=4.0.0">
 </head>
 
 <body>
@@ -942,51 +942,51 @@
   </div>
 
   <!-- AI Modal / Full Briefing Drawer -->
-  <div id="ai-briefing-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; width:90%; max-width:650px; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:10px;">
-        <b style="color:#38bdf8; font-family:var(--font-mono); font-size:12px;">[NETRA AI ASSISTANT TACTICAL BRIEFING]</b>
-        <button onclick="document.getElementById('ai-briefing-modal').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">&times;</button>
+  <div id="ai-briefing-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,17,0.88); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:rgba(8,16,36,0.97); border:1px solid rgba(0,229,255,0.18); border-radius:12px; width:90%; max-width:650px; padding:22px; box-shadow:0 0 60px rgba(0,100,200,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,229,255,0.1); padding-bottom:10px;">
+        <b style="color:#00e5ff; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px;">[NETRA AI TACTICAL BRIEFING]</b>
+        <button onclick="document.getElementById('ai-briefing-modal').style.display='none'" style="background:none; border:none; color:#64748b; font-size:20px; cursor:pointer;">&times;</button>
       </div>
-      <div id="ai-modal-response-body" style="font-size:13px; line-height:1.5; color:#f1f5f9; max-height:65vh; overflow-y:auto;">
+      <div id="ai-modal-response-body" style="font-size:13px; line-height:1.6; color:#e2e8f0; max-height:65vh; overflow-y:auto;">
         Computing response...
       </div>
     </div>
   </div>
 
   <!-- Ingest Custom Dataset Modal -->
-  <div id="upload-modal" style="display:none; position:fixed; inset:0; background:rgba(4,7,15,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(6px);">
-    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:10px; width:90%; max-width:540px; padding:24px; box-shadow:0 15px 50px rgba(0,0,0,0.9);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #1e293b; padding-bottom:12px;">
+  <div id="upload-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,17,0.88); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:rgba(8,16,36,0.97); border:1px solid rgba(0,229,255,0.18); border-radius:12px; width:90%; max-width:540px; padding:24px; box-shadow:0 0 60px rgba(0,100,200,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(0,229,255,0.1); padding-bottom:12px;">
         <div style="display:flex; align-items:center; gap:8px; color:#fff; font-weight:700; font-size:14px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
           <span>Ingest Custom Social Media Dataset</span>
         </div>
-        <button id="btn-close-upload" style="background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">&times;</button>
+        <button id="btn-close-upload" style="background:none; border:none; color:#64748b; font-size:22px; cursor:pointer; line-height:1;">&times;</button>
       </div>
       
-      <p style="font-size:12px; color:#94a3b8; line-height:1.5; margin-bottom:16px;">
-        Upload a CSV or JSON dump of social posts to run through NETRA's 10-stage AI, Louvain graph clustering, and CIB bot forensics pipeline in real time.
+      <p style="font-size:12px; color:#8da8c8; line-height:1.6; margin-bottom:16px;">
+        Upload a CSV or JSON dump of social posts to run through NETRA's 14-stage AI pipeline, Louvain graph clustering, and CIB bot forensics in real time.
       </p>
 
-      <div id="drop-zone" style="border:2px dashed #334155; border-radius:8px; padding:32px 20px; text-align:center; background:#111a2d; cursor:pointer; transition:all 0.2s ease;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" style="margin-bottom:10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="12"></line><line x1="15" y1="15" x2="12" y2="12"></line></svg>
+      <div id="drop-zone" style="border:2px dashed rgba(0,229,255,0.18); border-radius:8px; padding:32px 20px; text-align:center; background:rgba(0,229,255,0.03); cursor:pointer; transition:all 0.2s ease;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" style="margin-bottom:10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="12"></line><line x1="15" y1="15" x2="12" y2="12"></line></svg>
         <div style="font-size:13px; font-weight:600; color:#fff;">Drag &amp; Drop CSV / JSON File Here</div>
-        <div style="font-size:11px; color:#64748b; margin-top:4px;">or click to browse local files</div>
+        <div style="font-size:11px; color:#4e6a8a; margin-top:4px;">or click to browse local files</div>
         <input type="file" id="file-input" accept=".csv,.json" style="display:none;">
       </div>
 
       <div id="upload-status" style="display:none; margin-top:14px; font-size:12px; padding:10px; border-radius:6px;"></div>
 
       <div style="margin-top:18px; display:flex; justify-content:space-between; align-items:center;">
-        <a href="javascript:void(0)" id="download-template-btn" style="color:#38bdf8; font-size:11.5px; text-decoration:none;">📥 Download Sample CSV Template</a>
-        <button id="btn-submit-upload" style="background:#0284c7; color:#fff; border:none; padding:9px 18px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">Run Intelligence Analysis</button>
+        <a href="javascript:void(0)" id="download-template-btn" style="color:#00e5ff; font-size:11.5px; text-decoration:none; opacity:0.8;">📥 Download Sample CSV Template</a>
+        <button id="btn-submit-upload" style="background:rgba(0,229,255,0.15); color:#00e5ff; border:1px solid rgba(0,229,255,0.35); padding:9px 18px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s;">Run Intelligence Analysis</button>
       </div>
     </div>
   </div>
 
   <!-- Application JS Controller -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=3.3.0"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=4.0.0"></script>
 </body>
 </html>
 
